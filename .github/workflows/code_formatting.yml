@@ -1,0 +1,26 @@
+name: Checking the formatting of the code
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  formatting-check:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - check: ''
+            exclude: ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run clang-format
+        uses: jidicula/clang-format-action@v4.14.0
+        with:
+          clang-format-version: '19'
+          check-path: ${{ matrix.path['check'] }}
+          exclude-regex: ${{ matrix.path['exclude'] }}

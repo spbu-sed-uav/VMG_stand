@@ -8,6 +8,7 @@ static void weight_reading_task(void *arg)
     HX711_init(GPIO_SCALES_DATA, GPIO_SCLK, eGAIN_128);
     HX711_tare();
 
+    ESP_LOGI("WEIGHTS", "Initialization is done");
     uint64_t weight = 0;
 
     for (;;)

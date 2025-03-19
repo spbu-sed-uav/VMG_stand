@@ -2,15 +2,15 @@
 #include "esp_adc/adc_continuous.h"
 #include "esp_adc/adc_oneshot.h"
 #include "esp_log.h"
-
+#include <array>
+#include "packets_and_sending.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-
-
+#include "rpm_counter.h"
 //================================================
 // ADC VARIABLES
 //================================================
-
+constexpr uint8_t ADC_MAX_AMOUNT{8};
 #define ADC_UNIT ADC_UNIT_1
 #define _ADC_UNIT_STR(unit) #unit
 #define ADC_UNIT_STR(unit) _ADC_UNIT_STR(unit)
@@ -23,16 +23,43 @@
 #define ADC_GET_DATA(p_data) ((p_data)->type1.data)
 
 #define READ_LEN 256
+class ADC_Driver
+{
+private:
+    std::byte bit_mask = std::byte(255);
 
-#define ADC_USED 3
+    // adc_channel_t ADC_CURRENT{ADC_CHANNEL_0};
+    // adc_channel_t ADC_VOLTAGE{ADC_CHANNEL_1};
+    // adc_channel_t ADC_DISTURBANCE{ADC_CHANNEL_2};
 
-#define ADC_CURRENT ADC_CHANNEL_5
-#define ADC_VOLTAGE ADC_CHANNEL_6
-#define ADC_DISTURBANCE ADC_CHANNEL_7
+    // adc_channel_t THERMISTOR_1{ADC_CHANNEL_3};
+    // adc_channel_t THERMISTOR_2{ADC_CHANNEL_4};
+    // adc_channel_t THERMISTOR_3{ADC_CHANNEL_5};
 
-static adc_channel_t channel[ADC_USED] = {ADC_CURRENT, ADC_VOLTAGE, ADC_DISTURBANCE};
+    // adc_channel_t EXTERNAL_1{ADC_CHANNEL_6};
+    // adc_channel_t EXTERNAL_2{ADC_CHANNEL_7};
+    std::array<adc_channel_t, ADC_MAX_AMOUNT> adc_channels{ADC_CHANNEL_0, ADC_CHANNEL_1, ADC_CHANNEL_2, ADC_CHANNEL_3, ADC_CHANNEL_4, ADC_CHANNEL_5, ADC_CHANNEL_6, ADC_CHANNEL_7};
 
-static adc_oneshot_unit_handle_t adc_handler = NULL;
+public:
+    ADC_Driver() = default;
+    
+    void adc_begin(std::byte bitmask);
+
+    bool check_bitmask(uint8_t index);
+    
+    void change_bitmask(uint8_t bit_to_swap);
+    void change_bitmask(std::byte swap_bit_mask);
+    adc_channel_t get_channel(uint8_t index);
+    void change_channel(uint8_t sensor_bit, adc_channel_t swap_channel);
+
+    void oneshot_adc_init();
+
+    uint32_t read_adc(uint8_t sensor_bit);
+};
+
+BaseType_t COUNTING_NOTIFY = pdFALSE;
+
+extern adc_oneshot_unit_handle_t adc_handler = NULL;
 
 static const char *ADC_TAG = "ADC_READINGS";
 
@@ -42,4 +69,4 @@ static const char *ADC_TAG = "ADC_READINGS";
 
 static void adc_reading_task(void *arg);
 
-static void oneshot_adc_init(adc_channel_t *channel, uint8_t channel_num);
+extern ADC_Driver Analogue_reader;

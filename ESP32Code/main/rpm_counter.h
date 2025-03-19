@@ -1,8 +1,8 @@
-#pragma once
-
 #include "freertos/task.h"
 #include "freertos/FreeRTOS.h"
 #include "esp_timer.h"
+
+constexpr BaseType_t COUNTING_NOTIFY {pdFALSE};
 
 //=================================================================
 // RPM COUNTING CONSTANTS

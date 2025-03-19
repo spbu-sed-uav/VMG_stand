@@ -6,7 +6,7 @@ static void IRAM_ATTR gpio_rotation_isr_handler(void *arg)
 {
     rotation_count++;
 
-    printf("Got rotation");
+    LOGI("COLLISION_SENSOR", "Got rotation");
 }
 
 /// @brief timer callback, every second recalculates rpm based on amount of rotations per second

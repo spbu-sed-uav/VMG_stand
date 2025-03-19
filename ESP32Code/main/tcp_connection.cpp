@@ -44,6 +44,30 @@ static int socket_send(const char *tag, const int sock, const char *data, const 
     return len;
 }
 
+void notify_all_with_value(uint32_t value)
+{
+    xTaskNotify(VOLTAGE_TASK_HANDLE, value, eSetValueWithOverwrite);
+    xTaskNotify(CURRENT_TASK_HANDLE, value, eSetValueWithOverwrite);
+    xTaskNotify(DISTURBNCE_TASK_HANDLE, value, eSetValueWithOverwrite);
+
+    xTaskNotify(TEMPERATURE1_TASK_HANDLE, value, eSetValueWithOverwrite);
+    xTaskNotify(TEMPERATURE2_TASK_HANDLE, value, eSetValueWithOverwrite);
+    xTaskNotify(TEMPERATURE3_TASK_HANDLE, value, eSetValueWithOverwrite);
+
+    xTaskNotify(WEIGHT_TASK_HANDLE, value, eSetValueWithOverwrite);
+    xTaskNotify(RPM_TASK_HANDLE, value, eSetValueWithOverwrite);
+}
+
+void socket_error_handling(int sock, const addrinfo &addr_info)
+{
+    if (sock != INVALID_SOCK)
+    {
+        close(sock);
+    }
+    free(const_cast<addrinfo *>(&addr_info));
+    vTaskDelete(SEND_TASK_HANDLE);
+}
+
 class TCP : public Transmission_protocols
 {
     void send_data(void *pvParameters) final
@@ -56,32 +80,6 @@ class TCP : public Transmission_protocols
         int flags = 0;
         static const char *TAG_TCP_SOCKET = "nonblocking-socket-client";
 
-        xTaskNotify(VOLTAGE_TASK_HANDLE, 0, eSetValueWithOverwrite);
-        xTaskNotify(CURRENT_TASK_HANDLE, 0, eSetValueWithOverwrite);
-        xTaskNotify(DISTURBNCE_TASK_HANDLE, 0, eSetValueWithOverwrite);
-
-        xTaskNotify(TEMPERATURE1_TASK_HANDLE, 0, eSetValueWithOverwrite);
-        xTaskNotify(TEMPERATURE2_TASK_HANDLE, 0, eSetValueWithOverwrite);
-        xTaskNotify(TEMPERATURE3_TASK_HANDLE, 0, eSetValueWithOverwrite);
-
-        xTaskNotify(WEIGHT_TASK_HANDLE, 0, eSetValueWithOverwrite);
-        xTaskNotify(RPM_TASK_HANDLE, 0, eSetValueWithOverwrite);
-
-        static const char *payload = "GET / HTTP/1.1\r\n\r\n"; // add struct there
-
-        xTaskNotify(VOLTAGE_TASK_HANDLE, 32000, eSetValueWithOverwrite);
-        xTaskNotify(CURRENT_TASK_HANDLE, 32000, eSetValueWithOverwrite);
-        xTaskNotify(DISTURBNCE_TASK_HANDLE, 32000, eSetValueWithOverwrite);
-
-        xTaskNotify(TEMPERATURE1_TASK_HANDLE, 32000, eSetValueWithOverwrite);
-        xTaskNotify(TEMPERATURE2_TASK_HANDLE, 32000, eSetValueWithOverwrite);
-        xTaskNotify(TEMPERATURE3_TASK_HANDLE, 32000, eSetValueWithOverwrite);
-
-        xTaskNotify(WEIGHT_TASK_HANDLE, 32000, eSetValueWithOverwrite);
-        xTaskNotify(RPM_TASK_HANDLE, 32000, eSetValueWithOverwrite);
-
-        static_cast<byte *>(); // for crc
-
         struct addrinfo hints = {.ai_socktype = SOCK_STREAM};
         struct addrinfo *address_info;
         int sock = INVALID_SOCK;
@@ -92,7 +90,7 @@ class TCP : public Transmission_protocols
             ESP_LOGE(TAG_TCP_SOCKET, "couldn't get hostname for `%s` "
                                      "getaddrinfo() returns %d, addrinfo=%p",
                      CONFIG_EXAMPLE_TCP_CLIENT_CONNECT_ADDRESS, res, address_info);
-            goto error;
+            socket_error_handling(sock, *address_info);
         }
 
         // Creating client's socket
@@ -100,7 +98,7 @@ class TCP : public Transmission_protocols
         if (sock < 0)
         {
             log_socket_error(TAG_TCP_SOCKET, sock, errno, "Unable to create socket");
-            goto error;
+            socket_error_handling(sock, *address_info);
         }
         ESP_LOGI(TAG_TCP_SOCKET, "Socket created, connecting to %s:%s", CONFIG_EXAMPLE_TCP_CLIENT_CONNECT_ADDRESS, CONFIG_EXAMPLE_TCP_CLIENT_CONNECT_PORT);
 
@@ -125,12 +123,12 @@ class TCP : public Transmission_protocols
                 if (res < 0)
                 {
                     log_socket_error(TAG_TCP_SOCKET, sock, errno, "Error during connection: select for socket to be writable");
-                    goto error;
+                    socket_error_handling(sock, *address_info);
                 }
                 else if (res == 0)
                 {
                     log_socket_error(TAG_TCP_SOCKET, sock, errno, "Connection timeout: select for socket to be writable");
-                    goto error;
+                    socket_error_handling(sock, *address_info);
                 }
                 else
                 {
@@ -140,29 +138,48 @@ class TCP : public Transmission_protocols
                     if (getsockopt(sock, SOL_SOCKET, SO_ERROR, (void *)(&sockerr), &len) < 0)
                     {
                         log_socket_error(TAG_TCP_SOCKET, sock, errno, "Error when getting socket error using getsockopt()");
-                        goto error;
+                        socket_error_handling(sock, *address_info);
                     }
                     if (sockerr)
                     {
                         log_socket_error(TAG_TCP_SOCKET, sock, sockerr, "Connection error");
-                        goto error;
+                        socket_error_handling(sock, *address_info);
                     }
                 }
             }
             else
             {
                 log_socket_error(TAG_TCP_SOCKET, sock, errno, "Socket is unable to connect");
-                goto error;
+                socket_error_handling(sock, *address_info);
             }
         }
         for (;;)
         {
+
+            notify_all_with_value(0);
+
+            PACKET_DATA initial_payload = packet_to_send;
+
+            notify_all_with_value(32000);
+
+            std::byte aux[sizeof(PACKET_DATA) - 1] = {};
+
+            memcpy(&aux, &initial_payload, sizeof(PACKET_DATA) - 1);
+            std::span<std::byte> span_bytes(aux);
+            initial_payload.crc_set(crc8(span_bytes));
+
+            static std::array<char, sizeof(PACKET_DATA)> payload_array; // there can be conversion errors (overflow I guess)
+
+            memcpy(&payload_array, &initial_payload, sizeof(initial_payload)); // check later
+
+            const char *payload = &payload_array[0]; // can be error somewhere
+
             ESP_LOGI(TAG_TCP_SOCKET, "Client sends data to the server...");
             len_msg = socket_send(TAG_TCP_SOCKET, sock, payload, strlen(payload));
             if (len_msg < 0)
             {
                 ESP_LOGE(TAG_TCP_SOCKET, "Error occurred during socket_send");
-                goto error;
+                socket_error_handling(sock, *address_info);
             }
             ESP_LOGI(TAG_TCP_SOCKET, "struct was sent");
 
@@ -173,20 +190,13 @@ class TCP : public Transmission_protocols
                 if (len_msg < 0)
                 {
                     ESP_LOGE(TAG_TCP_SOCKET, "Error occurred during try_receive");
-                    goto error;
+                    socket_error_handling(sock, *address_info);
                 }
                 vTaskDelay(pdMS_TO_TICKS(YIELD_TO_ALL_MS));
             } while (len_msg == 0);
             ESP_LOGI(TAG_TCP_SOCKET, "Received: %.*s", len_msg, rx_buffer);
 
-            vTaskDelay(100);
+            vTaskDelay(200);
         }
-    error:
-        if (sock != INVALID_SOCK)
-        {
-            close(sock);
-        }
-        free(address_info);
-        vTaskDelete(NULL);
     }
 };

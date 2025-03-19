@@ -23,22 +23,17 @@ extern "C"
 // TASK HANDLERS(For notifies)
 //=================================================================
 
-static TaskHandle_t VOLTAGE_TASK_HANDLE = NULL;
-static TaskHandle_t CURRENT_TASK_HANDLE = NULL;
-static TaskHandle_t DISTURBNCE_TASK_HANDLE = NULL;
+extern TaskHandle_t VOLTAGE_TASK_HANDLE = NULL;
+extern TaskHandle_t CURRENT_TASK_HANDLE = NULL;
+extern TaskHandle_t DISTURBNCE_TASK_HANDLE = NULL;
 
-static TaskHandle_t TEMPERATURE1_TASK_HANDLE = NULL;
-static TaskHandle_t TEMPERATURE2_TASK_HANDLE = NULL;
-static TaskHandle_t TEMPERATURE3_TASK_HANDLE = NULL;
+extern TaskHandle_t TEMPERATURE1_TASK_HANDLE = NULL;
+extern TaskHandle_t TEMPERATURE2_TASK_HANDLE = NULL;
+extern TaskHandle_t TEMPERATURE3_TASK_HANDLE = NULL;
 
-/*
-static TaskHandle_t VOLTAGE_TASK_HANDLE = NULL;
-static TaskHandle_t VOLTAGE_TASK_HANDLE = NULL;
-static TaskHandle_t VOLTAGE_TASK_HANDLE = NULL; I DON'T REMEMBER FOR WHAT IT IS
-*/
-
-static TaskHandle_t WEIGHT_TASK_HANDLE = NULL;
-static TaskHandle_t RPM_TASK_HANDLE = NULL;
+extern TaskHandle_t WEIGHT_TASK_HANDLE = NULL;
+extern TaskHandle_t RPM_TASK_HANDLE = NULL;
+extern TaskHandle_t SEND_TASK_HANDLE = NULL;
 
 //==================================================================
 //
@@ -54,3 +49,6 @@ class TCP : public Transmission_protocols
 {
     void send_data(void *pvParameters) final;
 };
+
+void notify_all_with_value(uint32_t value);
+void socket_error_handling(int sock, const addrinfo& addr_info);

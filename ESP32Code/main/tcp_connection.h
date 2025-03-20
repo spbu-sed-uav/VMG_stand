@@ -54,7 +54,11 @@ static int try_receive(const char *tag, const int sock, char *data, size_t max_l
 
 static int socket_send(const char *tag, const int sock, const char *data, const size_t len);
 
-class TCP : public Transmission_protocols;
+class TCP : public Transmission_protocols
+{
+    public:
+    void send_data() final;
+};
 
 void notify_all_with_value(uint32_t value);
 void socket_error_handling(int sock, const addrinfo &addr_info);

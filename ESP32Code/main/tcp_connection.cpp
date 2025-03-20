@@ -1,10 +1,5 @@
 #include "tcp_connection.h"
 
-class TCP : public Transmission_protocols;
-{
-    public:
-    void send_data() final;
-};
 
 static void log_socket_error(const char *tag, const int sock, const int err, const char *message)
 {

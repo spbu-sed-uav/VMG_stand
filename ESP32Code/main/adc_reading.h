@@ -58,7 +58,7 @@ public:
     void read_adc(uint8_t sensor_bit);
 };
 
-extern adc_oneshot_unit_handle_t adc_handler = NULL;
+extern adc_oneshot_unit_handle_t adc_handler;
 
 static const char *ADC_TAG = "ADC_READINGS";
 
@@ -66,6 +66,6 @@ static const char *ADC_TAG = "ADC_READINGS";
 // ADC FUNCTIONS
 //================================================
 
-static void adc_reading_task(void *arg);
+void adc_reading_task(void *arg);
 
-extern ADC_Driver Analogue_reader;
+extern ADC_Driver analogue_reader;

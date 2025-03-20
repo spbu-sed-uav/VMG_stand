@@ -29,7 +29,7 @@ extern "C"
 #include "wifi_connection.h"
 #include "tcp_connection.h"
 #include "HX711_reading.h"
-
+#include "transmission.h"
 
 /**
  * Brief:
@@ -60,18 +60,18 @@ static const char *MAIN_TAG = "MAIN";
 extern "C" void app_main()
 {
     //=========================================================
-    //WIFI CONNECTION
+    // WIFI CONNECTION
     esp_err_t ret = nvs_flash_init();
-    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-      ESP_ERROR_CHECK(nvs_flash_erase());
-      ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
+    {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
 
     ESP_LOGI("WIFI", "ESP_WIFI_MODE_STA");
     wifi_init_sta();
     //=========================================================
-
 
     const esp_timer_create_args_t periodic_timer_args = {
         .callback = &periodic_timer_callback,
@@ -102,25 +102,25 @@ extern "C" void app_main()
     // hook isr handler for specific gpio pin
     gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_rotation_isr_handler, NULL);
 
-    Analogue_reader.oneshot_adc_init();
-    
+    analogue_reader.oneshot_adc_init();
+
     xTaskCreatePinnedToCore(weight_reading_task, "Weight_reading", 2048, NULL, 10, &WEIGHT_TASK_HANDLE, tskNO_AFFINITY);
 
-    //xTaskCreate(,"Sending task", 2048, NULL, 40, &SEND_TASK_HANDLE);
-        
-    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048, (void *)0, 10, &VOLTAGE_TASK_HANDLE,tskNO_AFFINITY);            // check priorities, last null - handler
-    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Current", 2048, (void *)1, 10, &CURRENT_TASK_HANDLE,tskNO_AFFINITY);            // check priorities, last null - handler
-    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance", 2048, (void *)2, 10, &DISTURBNCE_TASK_HANDLE,tskNO_AFFINITY); // check priorities, last null - handler
-    xTaskCreatePinnedToCore(adc_reading_task, "Temperature1", 2048, (void *)3, 10, &TEMPERATURE1_TASK_HANDLE,tskNO_AFFINITY); // check priorities, last null - handler
-    xTaskCreatePinnedToCore(adc_reading_task, "Temperature2", 2048, (void *)4, 10, &TEMPERATURE2_TASK_HANDLE,tskNO_AFFINITY); // check priorities, last null - handler
+    // xTaskCreate(,"Sending task", 2048, NULL, 40, &SEND_TASK_HANDLE);
 
-    xTaskCreatePinnedToCore(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 10, &RPM_TASK_HANDLE,tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048, (void *)0, 10, &VOLTAGE_TASK_HANDLE, tskNO_AFFINITY);        // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Current", 2048, (void *)1, 10, &CURRENT_TASK_HANDLE, tskNO_AFFINITY);        // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance", 2048, (void *)2, 10, &DISTURBNCE_TASK_HANDLE, tskNO_AFFINITY); // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "Temperature1", 2048, (void *)3, 10, &TEMPERATURE1_TASK_HANDLE, tskNO_AFFINITY);  // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "Temperature2", 2048, (void *)4, 10, &TEMPERATURE2_TASK_HANDLE, tskNO_AFFINITY);  // check priorities, last null - handler
+
+    xTaskCreatePinnedToCore(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 10, &RPM_TASK_HANDLE, tskNO_AFFINITY);
 
     printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
 
     while (1)
     {
         vTaskDelay(1000);
-        //vTaskSuspend(NULL);
+        // vTaskSuspend(NULL);
     }
 }

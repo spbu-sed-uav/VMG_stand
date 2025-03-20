@@ -4,7 +4,7 @@
 
 /// @brief 
 /// @param arg 
-static void weight_reading_task(void *arg)
+void weight_reading_task(void *arg)
 {
     HX711_init(GPIO_SCALES_DATA, GPIO_SCLK, eGAIN_128);
     HX711_tare();

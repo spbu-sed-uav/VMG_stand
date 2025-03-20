@@ -9,24 +9,6 @@
 #include <span>
 #include <memory>
 
-#include "tcp_connection.h"
-enum class transmission_types
-{
-    NONE,
-    TCP,
-    UDP,
-    UART,
-    BLUETOOTH
-};
-
-class Transmission_protocols
-{
-public:
-    using ptr = std::unique_ptr<Transmission_protocols>;
-    
-    virtual void send_data() = 0;
-};
-
 // class Bluetooth : public Transmission_protocols
 // {
 //     void send_data() final;
@@ -43,8 +25,6 @@ public:
 // };
 
 std::byte crc8(std::span<std::byte> buffer);
-
-Transmission_protocols::ptr create_transmission();
 
 /// @brief
 class PACKET_DATA

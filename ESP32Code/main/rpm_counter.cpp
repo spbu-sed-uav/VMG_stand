@@ -1,8 +1,12 @@
 #include "rpm_counter.h"
 
+uint64_t time_rpm = 0;
+uint16_t rotation_count = 0;
+uint64_t final_rpm = 0;
+
 /// @brief ISR which increments amount of rotations
 /// @param arg NULL
-static void IRAM_ATTR gpio_rotation_isr_handler(void *arg)
+void IRAM_ATTR gpio_rotation_isr_handler(void *arg)
 {
     rotation_count++;
 
@@ -11,7 +15,7 @@ static void IRAM_ATTR gpio_rotation_isr_handler(void *arg)
 
 /// @brief timer callback, every second recalculates rpm based on amount of rotations per second
 /// @param arg NULL
-static void periodic_timer_callback(void *arg)
+void periodic_timer_callback(void *arg)
 {
     uint16_t count = rotation_count / AMOUNT_OF_WINGS;
     uint64_t time_to_count = esp_timer_get_time() - time_rpm;
@@ -25,7 +29,7 @@ static void periodic_timer_callback(void *arg)
 
 /// @brief function to safe rewriting rpm
 /// @param arg NULL
-static void rpm_safe_writing_task(void *arg)
+void rpm_safe_writing_task(void *arg)
 {
     for (;;)
     {

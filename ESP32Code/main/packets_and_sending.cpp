@@ -1,33 +1,6 @@
 #include "packets_and_sending.h"
 
-
-
-Transmission_protocols::ptr create_transmission(transmission_types type)
-{
-    switch (type)
-    {
-    case transmission_types::TCP:
-        return nullptr;
-    //    return std::make_unique<TCP>();
-        break;
-
-    case transmission_types::UDP:
-        return nullptr;
-        break;
-
-    case transmission_types::UART:
-        return nullptr;
-        break;
-
-    case transmission_types::BLUETOOTH:
-        return nullptr;
-        break;
-
-    default:
-        return nullptr;
-        break;
-    }
-}
+PACKET_DATA packet_to_send;
 // class Bluetooth : public Transmission_protocols
 // {
 //     void send_data() final

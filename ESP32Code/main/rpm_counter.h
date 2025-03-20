@@ -31,11 +31,11 @@
 // RPM COUNTING FUNCTIONS
 //=================================================================
 
-static void IRAM_ATTR gpio_rotation_isr_handler(void *arg);
+void IRAM_ATTR gpio_rotation_isr_handler(void *arg);
 
-static void periodic_timer_callback(void *arg);
+void periodic_timer_callback(void *arg);
 
-static void rpm_safe_writing_task(void *arg);
+void rpm_safe_writing_task(void *arg);
 
 //=================================================================
 // RPM VARIABLES

@@ -1,10 +1,8 @@
 #pragma once
 
-#ifndef __TCP_CONNECTION_H__
-#define __TCP_CONNECTION_H__
-
 #include <string.h>
-extern "C"{
+extern "C"
+{
 #include "xtensa/hal.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -18,31 +16,30 @@ extern "C"{
 #include "nvs_flash.h"
 #include "fcntl.h"
 }
+#include "transmission.h"
 #include "packets_and_sending.h"
 
 #define INVALID_SOCK (-1)
 
 #define YIELD_TO_ALL_MS 50
 
-class Transmission_Protocols;
-
-const char *TCP_CLIENT_CONNECT_ADDRESS = "127.0.0.1";
-const char *TCP_CLIENT_CONNECT_PORT = "5800";
+constexpr char *TCP_CLIENT_CONNECT_ADDRESS {"127.0.0.1"};
+constexpr char  *TCP_CLIENT_CONNECT_PORT {"5800"};
 //=================================================================
 // TASK HANDLERS(For notifies)
 //=================================================================
 
-extern TaskHandle_t VOLTAGE_TASK_HANDLE = NULL;
-extern TaskHandle_t CURRENT_TASK_HANDLE = NULL;
-extern TaskHandle_t DISTURBNCE_TASK_HANDLE = NULL;
+extern TaskHandle_t VOLTAGE_TASK_HANDLE;
+extern TaskHandle_t CURRENT_TASK_HANDLE;
+extern TaskHandle_t DISTURBNCE_TASK_HANDLE;
 
-extern TaskHandle_t TEMPERATURE1_TASK_HANDLE = NULL;
-extern TaskHandle_t TEMPERATURE2_TASK_HANDLE = NULL;
-extern TaskHandle_t TEMPERATURE3_TASK_HANDLE = NULL;
+extern TaskHandle_t TEMPERATURE1_TASK_HANDLE;
+extern TaskHandle_t TEMPERATURE2_TASK_HANDLE;
+extern TaskHandle_t TEMPERATURE3_TASK_HANDLE;
 
-extern TaskHandle_t WEIGHT_TASK_HANDLE = NULL;
-extern TaskHandle_t RPM_TASK_HANDLE = NULL;
-extern TaskHandle_t SEND_TASK_HANDLE = NULL;
+extern TaskHandle_t WEIGHT_TASK_HANDLE;
+extern TaskHandle_t RPM_TASK_HANDLE;
+extern TaskHandle_t SEND_TASK_HANDLE;
 
 //==================================================================
 //
@@ -56,11 +53,9 @@ static int socket_send(const char *tag, const int sock, const char *data, const 
 
 class TCP : public Transmission_protocols
 {
-    public:
+public:
     void send_data() final;
 };
 
 void notify_all_with_value(uint32_t value);
 void socket_error_handling(int sock, const addrinfo &addr_info);
-
-#endif

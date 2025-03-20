@@ -1,6 +1,7 @@
 #pragma once
-
+extern "C"{
 #include "HX711.h"
+}
 #include "rpm_counter.h"
 //=================================================================
 // HX711 CONSTANTS
@@ -10,4 +11,4 @@
 #define GPIO_SCLK GPIO_NUM_17
 #define AVG_SAMPLES 10
 
-static void weight_reading_task(void *arg);
+void weight_reading_task(void *arg);

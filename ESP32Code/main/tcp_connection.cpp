@@ -1,14 +1,25 @@
 #include "tcp_connection.h"
 
+TaskHandle_t VOLTAGE_TASK_HANDLE = NULL;
+TaskHandle_t CURRENT_TASK_HANDLE = NULL;
+TaskHandle_t DISTURBNCE_TASK_HANDLE = NULL;
 
-static void log_socket_error(const char *tag, const int sock, const int err, const char *message)
+TaskHandle_t TEMPERATURE1_TASK_HANDLE = NULL;
+TaskHandle_t TEMPERATURE2_TASK_HANDLE = NULL;
+TaskHandle_t TEMPERATURE3_TASK_HANDLE = NULL;
+
+TaskHandle_t WEIGHT_TASK_HANDLE = NULL;
+TaskHandle_t RPM_TASK_HANDLE = NULL;
+TaskHandle_t SEND_TASK_HANDLE = NULL;
+
+void log_socket_error(const char *tag, const int sock, const int err, const char *message)
 {
     ESP_LOGE(tag, "[sock=%d]: %s\n"
                   "error=%d: %s",
              sock, message, err, strerror(err));
 }
 
-static int try_receive(const char *tag, const int sock, char *data, size_t max_len)
+int try_receive(const char *tag, const int sock, char *data, size_t max_len)
 {
     int len = recv(sock, data, max_len, 0);
     if (len < 0)
@@ -29,7 +40,7 @@ static int try_receive(const char *tag, const int sock, char *data, size_t max_l
     return len;
 }
 
-static int socket_send(const char *tag, const int sock, const char *data, const size_t len)
+int socket_send(const char *tag, const int sock, const char *data, const size_t len)
 {
     int to_write = len;
     while (to_write > 0)

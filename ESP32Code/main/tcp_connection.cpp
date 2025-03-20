@@ -84,12 +84,12 @@ class TCP : public Transmission_protocols
         struct addrinfo *address_info;
         int sock = INVALID_SOCK;
 
-        int res = getaddrinfo(CONFIG_EXAMPLE_TCP_CLIENT_CONNECT_ADDRESS, CONFIG_EXAMPLE_TCP_CLIENT_CONNECT_PORT, &hints, &address_info);
+        int res = getaddrinfo(TCP_CLIENT_CONNECT_ADDRESS, TCP_CLIENT_CONNECT_PORT, &hints, &address_info);
         if (res != 0 || address_info == NULL)
         {
             ESP_LOGE(TAG_TCP_SOCKET, "couldn't get hostname for `%s` "
                                      "getaddrinfo() returns %d, addrinfo=%p",
-                     CONFIG_EXAMPLE_TCP_CLIENT_CONNECT_ADDRESS, res, address_info);
+                     TCP_CLIENT_CONNECT_ADDRESS, res, address_info);
             socket_error_handling(sock, *address_info);
         }
 
@@ -100,7 +100,7 @@ class TCP : public Transmission_protocols
             log_socket_error(TAG_TCP_SOCKET, sock, errno, "Unable to create socket");
             socket_error_handling(sock, *address_info);
         }
-        ESP_LOGI(TAG_TCP_SOCKET, "Socket created, connecting to %s:%s", CONFIG_EXAMPLE_TCP_CLIENT_CONNECT_ADDRESS, CONFIG_EXAMPLE_TCP_CLIENT_CONNECT_PORT);
+        ESP_LOGI(TAG_TCP_SOCKET, "Socket created, connecting to %s:%s", TCP_CLIENT_CONNECT_ADDRESS, TCP_CLIENT_CONNECT_PORT);
 
         // Marking the socket as non-blocking
         flags = fcntl(sock, F_GETFL);

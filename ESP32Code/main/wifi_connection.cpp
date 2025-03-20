@@ -1,4 +1,5 @@
 #include "wifi_connection.h"
+#include "log.h"
 
 static void event_handler(void *arg, esp_event_base_t event_base,
                           int32_t event_id, void *event_data)
@@ -9,7 +10,7 @@ static void event_handler(void *arg, esp_event_base_t event_base,
     }
     else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED)
     {
-        if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY)
+        if (s_retry_num < 8)
         {
             esp_wifi_connect();
             s_retry_num++;
@@ -57,18 +58,18 @@ void wifi_init_sta(void)
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = EXAMPLE_ESP_WIFI_SSID,
-            .password = EXAMPLE_ESP_WIFI_PASS,
+            .ssid = "RmC32",
+            .password = "yhydg6tceggn",
             /* Authmode threshold resets to WPA2 as default if password matches WPA2 standards (password len => 8).
              * If you want to connect the device to deprecated WEP/WPA networks, Please set the threshold value
              * to WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK and set the password with length and format matching to
              * WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK standards.
              */
             .threshold = {
-                .authmode = ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD,
+                .authmode = WIFI_AUTH_WPA3_PSK,
             },
-            .sae_pwe_h2e = ESP_WIFI_SAE_MODE,
-            .sae_h2e_identifier = EXAMPLE_H2E_IDENTIFIER,
+            .sae_pwe_h2e = WPA3_SAE_PWE_UNSPECIFIED,
+            .sae_h2e_identifier = "",
         },
     };
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
@@ -89,13 +90,11 @@ void wifi_init_sta(void)
      * happened. */
     if (bits & WIFI_CONNECTED_BIT)
     {
-        ESP_LOGI(WIFI_TAG, "connected to ap SSID:%s password:%s",
-                 EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+        ESP_LOGI(WIFI_TAG, "connected to ap SSID");
     }
     else if (bits & WIFI_FAIL_BIT)
     {
-        ESP_LOGI(WIFI_TAG, "Failed to connect to SSID:%s, password:%s",
-                 EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
+        ESP_LOGI(WIFI_TAG, "Failed to connect to SSID");
     }
     else
     {

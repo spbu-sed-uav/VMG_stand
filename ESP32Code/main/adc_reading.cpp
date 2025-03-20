@@ -1,4 +1,5 @@
 #include "adc_reading.h"
+#include "log.h"
 
 void ADC_Driver::change_bitmask(uint8_t bit_to_swap)
 {

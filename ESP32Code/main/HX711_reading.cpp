@@ -1,5 +1,7 @@
 #include "HX711_reading.h"
 #include "freertos/FreeRTOS.h"
+#include "log.h"
+#include "packets_and_sending.h"
 
 /// @brief 
 /// @param arg 
@@ -17,7 +19,7 @@ static void weight_reading_task(void *arg)
 
         ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(ONE_SECOND_MS));
 
-        packet_to_send.weight = weight;
+        packet_to_send.adc_set(weight, 0);
         vTaskDelay(100);
     }
 }

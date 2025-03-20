@@ -8,14 +8,14 @@ extern "C"
 #include <inttypes.h>
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
-
+#include "xtensa/hal.h"
 #include "driver/gpio.h"
 
 #include "sdkconfig.h"
 #include "esp_timer.h"
 #include "esp_sleep.h"
-
 }
+
 
 //================================================
 // MINE HEADERS
@@ -54,7 +54,7 @@ extern "C"
 
 static const char *MAIN_TAG = "MAIN";
 
-void app_main(void)
+extern "C" void app_main()
 {
     //=========================================================
     //WIFI CONNECTION
@@ -65,7 +65,7 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
 
-    ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
+    ESP_LOGI("WIFI", "ESP_WIFI_MODE_STA");
     wifi_init_sta();
     //=========================================================
 
@@ -99,11 +99,11 @@ void app_main(void)
     // hook isr handler for specific gpio pin
     gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_rotation_isr_handler, NULL);
 
-    oneshot_adc_init(channel, sizeof(channel) / sizeof(adc_channel_t));
-
+    Analogue_reader.oneshot_adc_init();
+    
     xTaskCreate(weight_reading_task, "Weight_reading", 2048, NULL, 10, &WEIGHT_TASK_HANDLE);
 
-    xTaskCreate(TCP::send_data,"Sending task", 2048, (void*),40, &SEND_TASK_HANDLE);
+    xTaskCreate(TCP::send_data,"Sending task", 2048, NULL, 40, &SEND_TASK_HANDLE);
         
     xTaskCreate(adc_reading_task, "ADC_Voltage", 2048, (void *)0, 10, &VOLTAGE_TASK_HANDLE);            // check priorities, last null - handler
     xTaskCreate(adc_reading_task, "ADC_Current", 2048, (void *)1, 10, &CURRENT_TASK_HANDLE);            // check priorities, last null - handler

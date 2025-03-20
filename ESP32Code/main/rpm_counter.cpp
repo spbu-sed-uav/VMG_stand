@@ -1,4 +1,6 @@
 #include "rpm_counter.h"
+#include "log.h"
+#include "packets_and_sending.h"
 
 /// @brief ISR which increments amount of rotations
 /// @param arg NULL
@@ -6,7 +8,7 @@ static void IRAM_ATTR gpio_rotation_isr_handler(void *arg)
 {
     rotation_count++;
 
-    LOGI("COLLISION_SENSOR", "Got rotation");
+    ESP_LOGI("COLLISION_SENSOR", "Got rotation");
 }
 
 /// @brief timer callback, every second recalculates rpm based on amount of rotations per second
@@ -33,7 +35,7 @@ static void rpm_safe_writing_task(void *arg)
         {
             ulTaskNotifyTake(COUNTING_NOTIFY, pdMS_TO_TICKS(ONE_SECOND_MS * 5));
 
-            packet_to_send.rpm = final_rpm;
+            packet_to_send.rpm_set(final_rpm);
 
             final_rpm = 0;
         }

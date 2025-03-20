@@ -54,8 +54,8 @@ public:
     uint32_t PACKET_DATA::rpm() { return _rpm; }
     void PACKET_DATA::rpm_set(const uint32_t rpm) { _rpm = rpm; }
     
-    uint32_t PACKET_DATA::adc(const uint32_t index) { return _ADC_Readings[index]; };
-    void PACKET_DATA::adc_set(const int adc, const uint32_t index) { _ADC_Readings[index] = adc; }
+    uint32_t PACKET_DATA::adc(const uint8_t index) { return _ADC_Readings[index]; };
+    void PACKET_DATA::adc_set(uint32_t adc, const uint8_t index) { _ADC_Readings[index] = adc; }
 
     std::byte PACKET_DATA::crc() { return _crc; }
     void PACKET_DATA::crc_set(const std::byte crc) { _crc = crc; }

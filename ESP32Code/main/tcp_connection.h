@@ -2,6 +2,7 @@
 extern "C"
 {
 #include <string.h>
+#include "xtensa/hal.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "sys/socket.h"
@@ -10,15 +11,18 @@ extern "C"
 #include "esp_system.h"
 #include "esp_event.h"
 #include "esp_log.h"
+#include "esp_mac.h"
 #include "nvs_flash.h"
 #include "syscalls.c"
 #include "fcntl.h"
 }
+#include "packets_and_sending.h"
 
 #define INVALID_SOCK (-1)
 
 #define YIELD_TO_ALL_MS 50
-
+const char *TCP_CLIENT_CONNECT_ADDRESS = "127.0.0.1";
+const char *TCP_CLIENT_CONNECT_PORT = "5800";
 //=================================================================
 // TASK HANDLERS(For notifies)
 //=================================================================
@@ -41,14 +45,15 @@ extern TaskHandle_t SEND_TASK_HANDLE = NULL;
 
 static void log_socket_error(const char *tag, const int sock, const int err, const char *message);
 
-static int try_receive(const char *tag, const int sock, char * data, size_t max_len);
+static int try_receive(const char *tag, const int sock, char *data, size_t max_len);
 
-static int socket_send(const char *tag, const int sock, const char * data, const size_t len);
+static int socket_send(const char *tag, const int sock, const char *data, const size_t len);
 
 class TCP : public Transmission_protocols
 {
+    public:
     void send_data(void *pvParameters) final;
 };
 
 void notify_all_with_value(uint32_t value);
-void socket_error_handling(int sock, const addrinfo& addr_info);
+void socket_error_handling(int sock, const addrinfo &addr_info);

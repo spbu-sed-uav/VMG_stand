@@ -1,6 +1,5 @@
 #include "HX711_reading.h"
 #include "freertos/FreeRTOS.h"
-#include "log.h"
 #include "packets_and_sending.h"
 
 /// @brief 

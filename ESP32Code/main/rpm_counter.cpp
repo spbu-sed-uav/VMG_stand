@@ -1,6 +1,4 @@
 #include "rpm_counter.h"
-#include "log.h"
-#include "packets_and_sending.h"
 
 /// @brief ISR which increments amount of rotations
 /// @param arg NULL
@@ -33,7 +31,7 @@ static void rpm_safe_writing_task(void *arg)
     {
         if (final_rpm)
         {
-            ulTaskNotifyTake(COUNTING_NOTIFY, pdMS_TO_TICKS(ONE_SECOND_MS * 5));
+            ulTaskNotifyTake(0, pdMS_TO_TICKS(ONE_SECOND_MS * 5));
 
             packet_to_send.rpm_set(final_rpm);
 

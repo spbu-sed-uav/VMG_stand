@@ -1,5 +1,4 @@
 #include "adc_reading.h"
-#include "log.h"
 
 void ADC_Driver::change_bitmask(uint8_t bit_to_swap)
 {
@@ -35,7 +34,7 @@ adc_channel_t ADC_Driver::get_channel(uint8_t index)
     return answer;
 }
 
-uint32_t ADC_Driver::read_adc(uint8_t sensor_bit)
+void ADC_Driver::read_adc(uint8_t sensor_bit)
 {
     int readings[10];
 
@@ -76,7 +75,7 @@ static void adc_reading_task(void *arg)
 
     for (;;)
     {
-        ulTaskNotifyTake(COUNTING_NOTIFY, pdMS_TO_TICKS(ONE_SECOND_MS));
+        ulTaskNotifyTake(0, pdMS_TO_TICKS(ONE_SECOND_MS));
         Analogue_reader.read_adc(*static_cast<uint8_t*>(arg));
         vTaskDelay(10);
     }

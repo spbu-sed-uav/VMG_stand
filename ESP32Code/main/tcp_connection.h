@@ -1,7 +1,10 @@
 #pragma once
-extern "C"
-{
+
+#ifndef __TCP_CONNECTION_H__
+#define __TCP_CONNECTION_H__
+
 #include <string.h>
+extern "C"{
 #include "xtensa/hal.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -13,7 +16,6 @@ extern "C"
 #include "esp_log.h"
 #include "esp_mac.h"
 #include "nvs_flash.h"
-#include "syscalls.c"
 #include "fcntl.h"
 }
 #include "packets_and_sending.h"
@@ -21,6 +23,9 @@ extern "C"
 #define INVALID_SOCK (-1)
 
 #define YIELD_TO_ALL_MS 50
+
+class Transmission_Protocols;
+
 const char *TCP_CLIENT_CONNECT_ADDRESS = "127.0.0.1";
 const char *TCP_CLIENT_CONNECT_PORT = "5800";
 //=================================================================
@@ -49,11 +54,9 @@ static int try_receive(const char *tag, const int sock, char *data, size_t max_l
 
 static int socket_send(const char *tag, const int sock, const char *data, const size_t len);
 
-class TCP : public Transmission_protocols
-{
-    public:
-    void send_data(void *pvParameters) final;
-};
+class TCP : public Transmission_protocols;
 
 void notify_all_with_value(uint32_t value);
 void socket_error_handling(int sock, const addrinfo &addr_info);
+
+#endif

@@ -1,2 +1,2 @@
-idf_component_register(SRCS "rpm_counter.cpp" "main.cpp" "adc_reading.cpp" "temperature_sensor.cpp" "tcp_connection.cpp" "HX711.cpp" "packets_and_sending.cpp" "wifi_connection.cpp" 
+idf_component_register(SRCS "app_main.cpp" "rpm_counter.cpp" "adc_reading.cpp" "temperature_sensor.cpp" "tcp_connection.cpp" "HX711_reading.cpp" "packets_and_sending.cpp" "wifi_connection.cpp" 
                        INCLUDE_DIRS ".")

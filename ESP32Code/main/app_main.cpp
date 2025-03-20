@@ -1,11 +1,15 @@
-extern "C"
-{
+#include "freertos/FreeRTOSConfig.h"
+#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "esp_log.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <inttypes.h>
+
+extern "C"
+{
+#include "esp_log.h"
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
 #include "xtensa/hal.h"
@@ -15,7 +19,6 @@ extern "C"
 #include "esp_timer.h"
 #include "esp_sleep.h"
 }
-
 
 //================================================
 // MINE HEADERS
@@ -101,22 +104,23 @@ extern "C" void app_main()
 
     Analogue_reader.oneshot_adc_init();
     
-    xTaskCreate(weight_reading_task, "Weight_reading", 2048, NULL, 10, &WEIGHT_TASK_HANDLE);
+    xTaskCreatePinnedToCore(weight_reading_task, "Weight_reading", 2048, NULL, 10, &WEIGHT_TASK_HANDLE, tskNO_AFFINITY);
 
-    xTaskCreate(TCP::send_data,"Sending task", 2048, NULL, 40, &SEND_TASK_HANDLE);
+    //xTaskCreate(,"Sending task", 2048, NULL, 40, &SEND_TASK_HANDLE);
         
-    xTaskCreate(adc_reading_task, "ADC_Voltage", 2048, (void *)0, 10, &VOLTAGE_TASK_HANDLE);            // check priorities, last null - handler
-    xTaskCreate(adc_reading_task, "ADC_Current", 2048, (void *)1, 10, &CURRENT_TASK_HANDLE);            // check priorities, last null - handler
-    xTaskCreate(adc_reading_task, "ADC_Disturbance", 2048, (void *)2, 10, &DISTURBNCE_TASK_HANDLE); // check priorities, last null - handler
-    xTaskCreate(adc_reading_task, "Temperature1", 2048, (void *)3, 10, &TEMPERATURE1_TASK_HANDLE); // check priorities, last null - handler
-    xTaskCreate(adc_reading_task, "Temperature2", 2048, (void *)4, 10, &TEMPERATURE2_TASK_HANDLE); // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048, (void *)0, 10, &VOLTAGE_TASK_HANDLE,tskNO_AFFINITY);            // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Current", 2048, (void *)1, 10, &CURRENT_TASK_HANDLE,tskNO_AFFINITY);            // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance", 2048, (void *)2, 10, &DISTURBNCE_TASK_HANDLE,tskNO_AFFINITY); // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "Temperature1", 2048, (void *)3, 10, &TEMPERATURE1_TASK_HANDLE,tskNO_AFFINITY); // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "Temperature2", 2048, (void *)4, 10, &TEMPERATURE2_TASK_HANDLE,tskNO_AFFINITY); // check priorities, last null - handler
 
-    xTaskCreate(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 10, &RPM_TASK_HANDLE);
+    xTaskCreatePinnedToCore(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 10, &RPM_TASK_HANDLE,tskNO_AFFINITY);
 
     printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
 
     while (1)
     {
-        vTaskSuspend(NULL);
+        vTaskDelay(1000);
+        //vTaskSuspend(NULL);
     }
 }

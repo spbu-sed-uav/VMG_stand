@@ -2,10 +2,11 @@
 #include "esp_adc/adc_continuous.h"
 #include "esp_adc/adc_oneshot.h"
 #include "esp_log.h"
-#include <array>
-#include "packets_and_sending.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+
+#include <array>
+#include "packets_and_sending.h"
 #include "rpm_counter.h"
 //================================================
 // ADC VARIABLES
@@ -54,10 +55,8 @@ public:
 
     void oneshot_adc_init();
 
-    uint32_t read_adc(uint8_t sensor_bit);
+    void read_adc(uint8_t sensor_bit);
 };
-
-BaseType_t COUNTING_NOTIFY = pdFALSE;
 
 extern adc_oneshot_unit_handle_t adc_handler = NULL;
 

@@ -1,8 +1,11 @@
-#include "freertos/task.h"
+#pragma once
+#include "esp_log.h"
+#include "packets_and_sending.h"
+#include "freertos/FreeRTOSConfig.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_timer.h"
 
-constexpr BaseType_t COUNTING_NOTIFY {pdFALSE};
 
 //=================================================================
 // RPM COUNTING CONSTANTS
@@ -38,6 +41,6 @@ static void rpm_safe_writing_task(void *arg);
 // RPM VARIABLES
 //=================================================================
 
-static uint64_t time_rpm = 0;
-static uint16_t rotation_count = 0;
-static uint64_t final_rpm = 0;
+extern uint64_t time_rpm;
+extern uint16_t rotation_count;
+extern uint64_t final_rpm;

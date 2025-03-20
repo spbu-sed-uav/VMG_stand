@@ -7,7 +7,8 @@ Transmission_protocols::ptr create_transmission(transmission_types type)
     switch (type)
     {
     case transmission_types::TCP:
-        return std::make_unique<TCP>();
+        return nullptr;
+    //    return std::make_unique<TCP>();
         break;
 
     case transmission_types::UDP:

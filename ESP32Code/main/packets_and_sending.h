@@ -1,10 +1,14 @@
 #pragma once
 
+#ifndef __PACKETS_AND_SENDING_H__
+#define __PACKETS_AND_SENDING_H__
+
 #include "adc_reading.h"
 #include <cstddef>
 #include <utility>
 #include <span>
 #include <memory>
+
 #include "tcp_connection.h"
 enum class transmission_types
 {
@@ -20,7 +24,7 @@ class Transmission_protocols
 public:
     using ptr = std::unique_ptr<Transmission_protocols>;
     
-    virtual void send_data(void *pvParameters) = 0;
+    virtual void send_data() = 0;
 };
 
 // class Bluetooth : public Transmission_protocols
@@ -51,14 +55,16 @@ class PACKET_DATA
 public:
     PACKET_DATA() = default;
 
-    uint32_t PACKET_DATA::rpm() { return _rpm; }
-    void PACKET_DATA::rpm_set(const uint32_t rpm) { _rpm = rpm; }
+    uint32_t rpm() { return _rpm; }
+    void rpm_set(const uint32_t rpm) { _rpm = rpm; }
     
-    uint32_t PACKET_DATA::adc(const uint8_t index) { return _ADC_Readings[index]; };
-    void PACKET_DATA::adc_set(uint32_t adc, const uint8_t index) { _ADC_Readings[index] = adc; }
+    uint32_t adc(const uint8_t index) { return _ADC_Readings[index]; };
+    void adc_set(uint32_t adc, const uint8_t index) { _ADC_Readings[index] = adc; }
 
-    std::byte PACKET_DATA::crc() { return _crc; }
-    void PACKET_DATA::crc_set(const std::byte crc) { _crc = crc; }
+    std::byte crc() { return _crc; }
+    void crc_set(const std::byte crc) { _crc = crc; }
 };
 
 extern struct PACKET_DATA packet_to_send;
+
+#endif

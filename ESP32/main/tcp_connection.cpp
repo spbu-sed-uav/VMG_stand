@@ -21,7 +21,7 @@ void log_socket_error(const char *tag, const int sock, const int err, const char
 
 int try_receive(const char *tag, const int sock, char *data, size_t max_len)
 {
-    int len = recv(sock, data, max_len, 0);
+  int const len = recv(sock, data, max_len, 0);
     if (len < 0)
     {
         if (errno == EINPROGRESS || errno == EAGAIN || errno == EWOULDBLOCK)
@@ -45,7 +45,7 @@ int socket_send(const char *tag, const int sock, const char *data, const size_t 
     int to_write = len;
     while (to_write > 0)
     {
-        int written = send(sock, data + (len - to_write), to_write, 0);
+      int const written = send(sock, data + (len - to_write), to_write, 0);
         if (written < 0 && errno != EINPROGRESS && errno != EAGAIN && errno != EWOULDBLOCK)
         {
             log_socket_error(tag, sock, errno, "Error occurred during sending");
@@ -82,7 +82,7 @@ void socket_error_handling(int sock, const addrinfo &addr_info)
 
 void TCP::establish_connection()
 {
-    struct addrinfo hints = {.ai_socktype = SOCK_STREAM};
+  const struct addrinfo hints = {.ai_socktype = SOCK_STREAM};
     sock = INVALID_SOCK;
 
     int res = getaddrinfo(TCP_CLIENT_CONNECT_ADDRESS, TCP_CLIENT_CONNECT_PORT, &hints, &address_info);

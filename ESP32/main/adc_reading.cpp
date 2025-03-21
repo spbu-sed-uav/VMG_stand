@@ -18,16 +18,17 @@ void ADC_Driver::change_channel(uint8_t channel_bit, adc_channel_t swap_channel)
 
 bool ADC_Driver::check_bitmask(uint8_t index)
 {
-    bool bitmask_check = static_cast<uint8_t>((bit_mask >> index) & std::byte(1));
+    bool const bitmask_check = static_cast<uint8_t>((bit_mask >> index) & std::byte(1));
     return bitmask_check;
 }
 
 adc_channel_t ADC_Driver::get_channel(uint8_t index)
 {
-    if (check_bitmask(index))
-        ESP_LOGE(ADC_TAG, "Channel doesn't work");
+    if (check_bitmask(index)) {
+    ESP_LOGE(ADC_TAG, "Channel doesn't work");
+  }
 
-    adc_channel_t answer = (index < adc_channels.size()) ? adc_channels[index] : ADC_CHANNEL_9; // possible bug place
+  adc_channel_t const answer = (index < adc_channels.size()) ? adc_channels[index] : ADC_CHANNEL_9; // possible bug place
 
     if (answer == ADC_CHANNEL_9)
         ESP_LOGE(ADC_TAG, "trying to get wrong channel");
@@ -46,16 +47,16 @@ void ADC_Driver::read_adc(uint8_t sensor_bit)
 
 void ADC_Driver::oneshot_adc_init() // maybe remove parameters, bcz they're global
 {
-    adc_oneshot_unit_handle_t handle = NULL;
+    adc_oneshot_unit_handle_t handle          = NULL;
 
-    adc_oneshot_unit_init_cfg_t dig_cfg = {
+  adc_oneshot_unit_init_cfg_t const dig_cfg = {
         .unit_id = ADC_UNIT_1,
         .ulp_mode = ADC_ULP_MODE_DISABLE,
     };
 
     ESP_ERROR_CHECK(adc_oneshot_new_unit(&dig_cfg, &handle));
 
-    adc_oneshot_chan_cfg_t chan_config = {
+  adc_oneshot_chan_cfg_t const chan_config = {
         .atten = ADC_ATTEN,
         .bitwidth = ADC_BIT_WIDTH,
     };

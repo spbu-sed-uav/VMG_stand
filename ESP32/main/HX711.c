@@ -122,7 +122,7 @@ unsigned long  HX711_read_average(char times)
 
 unsigned long HX711_get_value(char times) 
 {
-	unsigned long avg = HX711_read_average(times);
+  unsigned long const avg = HX711_read_average(times);
 	if(avg > OFFSET)
 		return avg - OFFSET;
 	else

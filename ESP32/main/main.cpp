@@ -85,7 +85,7 @@ extern "C" void app_main()
 
     ESP_ERROR_CHECK(esp_timer_start_periodic(periodic_timer, ONE_SECOND_MS));
 
-    gpio_config_t io_conf = {
+    gpio_config_t const io_conf = {
         GPIO_INPUT_PIN_SEL,    // gpio mask
         GPIO_MODE_INPUT,       /*!< GPIO mode: set input/output mode                     */
         GPIO_PULLUP_DISABLE,   /*!< GPIweight_reading_task-up                                         */

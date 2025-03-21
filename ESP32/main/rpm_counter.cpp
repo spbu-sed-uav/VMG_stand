@@ -17,8 +17,8 @@ void IRAM_ATTR gpio_rotation_isr_handler(void *arg)
 /// @param arg NULL
 void periodic_timer_callback(void *arg)
 {
-    uint16_t count = rotation_count / AMOUNT_OF_WINGS;
-    uint64_t time_to_count = esp_timer_get_time() - time_rpm;
+    uint16_t const count         = rotation_count / AMOUNT_OF_WINGS;
+    uint64_t const time_to_count = esp_timer_get_time() - time_rpm;
 
     final_rpm = count / time_to_count * ONE_SECOND_MS * 60;
 

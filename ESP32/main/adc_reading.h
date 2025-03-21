@@ -50,7 +50,7 @@ class ADC_Driver {
   bool check_bitmask(uint8_t index);
 
   void change_bitmask(uint8_t bit_to_swap);
-  void change_bitmask(std::byte swap_bit_mask);
+  void change_bitmask(std::byte swap_bitmask);
   adc_channel_t get_channel(uint8_t index);
   void change_channel(uint8_t sensor_bit, adc_channel_t swap_channel);
 

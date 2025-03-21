@@ -118,7 +118,7 @@ extern "C" void app_main()
 
     printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
 
-    while (1)
+    while (true)
     {
         vTaskSuspend(NULL);
     }

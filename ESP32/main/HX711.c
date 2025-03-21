@@ -134,9 +134,7 @@ HX711_get_value(char times)
   if (avg > OFFSET) {
     return avg - OFFSET;
   }
-  else {
-    return 0;
-  }
+  return 0;
 }
 
 float

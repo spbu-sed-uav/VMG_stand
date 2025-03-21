@@ -85,7 +85,7 @@ socket_error_handling(int sock, addrinfo const& addr_info)
 void
 TCP::establish_connection()
 {
-  const struct addrinfo hints = {.ai_socktype = SOCK_STREAM};
+  const addrinfo hints = {.ai_socktype = SOCK_STREAM};
   sock                        = INVALID_SOCK;
 
   int res = getaddrinfo(TCP_CLIENT_CONNECT_ADDRESS, TCP_CLIENT_CONNECT_PORT,

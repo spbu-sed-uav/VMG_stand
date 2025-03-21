@@ -139,7 +139,7 @@ TCP::establish_connection()
       }
       else {
         int sockerr;
-        socklen_t len = (socklen_t)sizeof(int);
+        auto len = (socklen_t)sizeof(int);
 
         if (getsockopt(sock, SOL_SOCKET, SO_ERROR, (void*)(&sockerr), &len) <
             0) {

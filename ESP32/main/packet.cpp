@@ -22,17 +22,18 @@ PACKET_DATA packet_to_send;
 //     }
 // };
 // TODO: remake to crc table
-std::byte crc8(std::span<std::byte> buffer)
+std::byte
+crc8(std::span<std::byte> buffer)
 {
-    std::byte crc{0};
-    for (const auto byte : buffer)
-    {
-        std::byte data = byte;
-        for (int j = 8; j > 0; j--)
-        {
-            crc = static_cast<bool>((crc ^ data) & std::byte{1}) ? (crc >> 1) ^ std::byte{0x8C} : (crc >> 1);
-            data >>= 1;
-        }
+  std::byte crc{0};
+  for (auto const byte : buffer) {
+    std::byte data = byte;
+    for (int j = 8; j > 0; j--) {
+      crc    = static_cast<bool>((crc ^ data) & std::byte{1})
+                   ? (crc >> 1) ^ std::byte{0x8C}
+                   : (crc >> 1);
+      data >>= 1;
     }
-    return crc;
+  }
+  return crc;
 }

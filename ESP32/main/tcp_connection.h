@@ -1,30 +1,29 @@
 #pragma once
 
 #include <string.h>
-extern "C"
-{
-#include "xtensa/hal.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "sys/socket.h"
-#include "netdb.h"
+extern "C" {
 #include "errno.h"
-#include "esp_system.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_mac.h"
-#include "nvs_flash.h"
+#include "esp_system.h"
 #include "fcntl.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "netdb.h"
+#include "nvs_flash.h"
+#include "sys/socket.h"
+#include "xtensa/hal.h"
 }
-#include "transmission.h"
 #include "packet.h"
+#include "transmission.h"
 
 #define INVALID_SOCK (-1)
 
 #define YIELD_TO_ALL_MS 50
 
-constexpr char *TCP_CLIENT_CONNECT_ADDRESS{"127.0.0.1"};
-constexpr char *TCP_CLIENT_CONNECT_PORT{"5800"};
+constexpr char* TCP_CLIENT_CONNECT_ADDRESS{"127.0.0.1"};
+constexpr char* TCP_CLIENT_CONNECT_PORT{"5800"};
 //=================================================================
 // TASK HANDLERS(For notifies)
 //=================================================================
@@ -45,23 +44,26 @@ extern TaskHandle_t SEND_TASK_HANDLE;
 //
 //==================================================================
 
-static void log_socket_error(const char *tag, const int sock, const int err, const char *message);
+static void log_socket_error(char const* tag, int const sock, int const err,
+                             char const* message);
 
-static int try_receive(const char *tag, const int sock, char *data, size_t max_len);
+static int try_receive(char const* tag, int const sock, char* data,
+                       size_t max_len);
 
-static int socket_send(const char *tag, const int sock, const char *data, const size_t len);
+static int socket_send(char const* tag, int const sock, char const* data,
+                       size_t const len);
 
-class TCP : public Transmission_protocols
-{
-protected:
-    const char* TRANSMISSION_TAG = "TCP NON_BLOCKING_SOCKET";
-    addrinfo* address_info;
-    int sock;
-public:
-    void send_data(const char* payload) final;
-    const char* get_data() final;
-    void establish_connection() final;
+class TCP : public Transmission_protocols {
+ protected:
+  char const* TRANSMISSION_TAG = "TCP NON_BLOCKING_SOCKET";
+  addrinfo* address_info;
+  int sock;
+
+ public:
+  void send_data(char const* payload) final;
+  char const* get_data() final;
+  void establish_connection() final;
 };
 
 void notify_all_with_value(uint32_t value);
-void socket_error_handling(int sock, const addrinfo &addr_info);
+void socket_error_handling(int sock, addrinfo const& addr_info);

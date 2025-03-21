@@ -1,10 +1,11 @@
 #pragma once
 
-#include "adc_reading.h"
 #include <cstddef>
-#include <utility>
-#include <span>
 #include <memory>
+#include <span>
+#include <utility>
+
+#include "adc_reading.h"
 
 // class Bluetooth : public Transmission_protocols
 // {
@@ -24,22 +25,45 @@
 std::byte crc8(std::span<std::byte> buffer);
 
 /// @brief
-class PACKET_DATA
-{
-    uint32_t _rpm;                    // done                    // Rotation per minute
-    uint32_t _ADC_Readings[8]; // done
-    std::byte _crc;                   // crc
-public:
-    PACKET_DATA() = default;
+class PACKET_DATA {
+  uint32_t _rpm;              // done                    // Rotation per minute
+  uint32_t _ADC_Readings[8];  // done
+  std::byte _crc;             // crc
+ public:
+  PACKET_DATA() = default;
 
-    uint32_t rpm() { return _rpm; }
-    void rpm_set(const uint32_t rpm) { _rpm = rpm; }
-    
-    uint32_t adc(const uint8_t index) { return _ADC_Readings[index]; };
-    void adc_set(uint32_t adc, const uint8_t index) { _ADC_Readings[index] = adc; }
+  uint32_t
+  rpm()
+  {
+    return _rpm;
+  }
+  void
+  rpm_set(uint32_t const rpm)
+  {
+    _rpm = rpm;
+  }
 
-    std::byte crc() { return _crc; }
-    void crc_set(const std::byte crc) { _crc = crc; }
+  uint32_t
+  adc(uint8_t const index)
+  {
+    return _ADC_Readings[index];
+  };
+  void
+  adc_set(uint32_t adc, uint8_t const index)
+  {
+    _ADC_Readings[index] = adc;
+  }
+
+  std::byte
+  crc()
+  {
+    return _crc;
+  }
+  void
+  crc_set(std::byte const crc)
+  {
+    _crc = crc;
+  }
 };
 
 extern struct PACKET_DATA packet_to_send;

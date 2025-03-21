@@ -1,24 +1,25 @@
 #include "HX711_reading.h"
+
 #include "freertos/FreeRTOS.h"
 #include "packet.h"
 
-/// @brief 
-/// @param arg 
-void weight_reading_task(void *arg)
+/// @brief
+/// @param arg
+void
+weight_reading_task(void* arg)
 {
-    HX711_init(GPIO_SCALES_DATA, GPIO_SCLK, eGAIN_128);
-    HX711_tare();
+  HX711_init(GPIO_SCALES_DATA, GPIO_SCLK, eGAIN_128);
+  HX711_tare();
 
-    ESP_LOGI("WEIGHTS", "Initialization is done");
-    uint64_t weight = 0;
+  ESP_LOGI("WEIGHTS", "Initialization is done");
+  uint64_t weight = 0;
 
-    for (;;)
-    {
-        weight = HX711_get_units(AVG_SAMPLES);
+  for (;;) {
+    weight = HX711_get_units(AVG_SAMPLES);
 
-        ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(ONE_SECOND_MS));
+    ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(ONE_SECOND_MS));
 
-        packet_to_send.adc_set(weight, 0);
-        vTaskDelay(100);
-    }
+    packet_to_send.adc_set(weight, 0);
+    vTaskDelay(100);
+  }
 }

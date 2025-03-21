@@ -14,7 +14,7 @@ build
 ESP32Code/build
 ESP32Code/.vscode
 ESP32Code/.devcontainer
-sdkconfig
+sdkconfig*
 pytest*
 *.yml
 managed_components*

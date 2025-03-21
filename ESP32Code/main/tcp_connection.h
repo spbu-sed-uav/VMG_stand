@@ -17,14 +17,14 @@ extern "C"
 #include "fcntl.h"
 }
 #include "transmission.h"
-#include "packets_and_sending.h"
+#include "packet.h"
 
 #define INVALID_SOCK (-1)
 
 #define YIELD_TO_ALL_MS 50
 
-constexpr char *TCP_CLIENT_CONNECT_ADDRESS {"127.0.0.1"};
-constexpr char  *TCP_CLIENT_CONNECT_PORT {"5800"};
+constexpr char *TCP_CLIENT_CONNECT_ADDRESS{"127.0.0.1"};
+constexpr char *TCP_CLIENT_CONNECT_PORT{"5800"};
 //=================================================================
 // TASK HANDLERS(For notifies)
 //=================================================================
@@ -53,8 +53,14 @@ static int socket_send(const char *tag, const int sock, const char *data, const 
 
 class TCP : public Transmission_protocols
 {
+protected:
+    const char* TRANSMISSION_TAG = "TCP NON_BLOCKING_SOCKET";
+    addrinfo* address_info;
+    int sock;
 public:
-    void send_data() final;
+    void send_data(const char* payload) final;
+    const char* get_data() final;
+    void establish_connection() final;
 };
 
 void notify_all_with_value(uint32_t value);

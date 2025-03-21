@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef __PACKETS_AND_SENDING_H__
-#define __PACKETS_AND_SENDING_H__
-
 #include "adc_reading.h"
 #include <cstddef>
 #include <utility>
@@ -46,5 +43,3 @@ public:
 };
 
 extern struct PACKET_DATA packet_to_send;
-
-#endif

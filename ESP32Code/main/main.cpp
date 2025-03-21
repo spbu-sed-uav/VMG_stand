@@ -106,21 +106,20 @@ extern "C" void app_main()
 
     xTaskCreatePinnedToCore(weight_reading_task, "Weight_reading", 2048, NULL, 10, &WEIGHT_TASK_HANDLE, tskNO_AFFINITY);
 
-    // xTaskCreate(,"Sending task", 2048, NULL, 40, &SEND_TASK_HANDLE);
+    xTaskCreatePinnedToCore(transmission_task,"Sending task", 2048, NULL, 40, &SEND_TASK_HANDLE, 0);
 
-    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048, (void *)0, 10, &VOLTAGE_TASK_HANDLE, tskNO_AFFINITY);        // check priorities, last null - handler
-    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Current", 2048, (void *)1, 10, &CURRENT_TASK_HANDLE, tskNO_AFFINITY);        // check priorities, last null - handler
-    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance", 2048, (void *)2, 10, &DISTURBNCE_TASK_HANDLE, tskNO_AFFINITY); // check priorities, last null - handler
-    xTaskCreatePinnedToCore(adc_reading_task, "Temperature1", 2048, (void *)3, 10, &TEMPERATURE1_TASK_HANDLE, tskNO_AFFINITY);  // check priorities, last null - handler
-    xTaskCreatePinnedToCore(adc_reading_task, "Temperature2", 2048, (void *)4, 10, &TEMPERATURE2_TASK_HANDLE, tskNO_AFFINITY);  // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048, (void *)0, 10, &VOLTAGE_TASK_HANDLE, 1);        // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Current", 2048, (void *)1, 10, &CURRENT_TASK_HANDLE, 1);        // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance", 2048, (void *)2, 10, &DISTURBNCE_TASK_HANDLE, 1); // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "Temperature1", 2048, (void *)3, 10, &TEMPERATURE1_TASK_HANDLE, 0);  // check priorities, last null - handler
+    xTaskCreatePinnedToCore(adc_reading_task, "Temperature2", 2048, (void *)4, 10, &TEMPERATURE2_TASK_HANDLE, 0);  // check priorities, last null - handler
 
-    xTaskCreatePinnedToCore(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 10, &RPM_TASK_HANDLE, tskNO_AFFINITY);
+    xTaskCreatePinnedToCore(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 10, &RPM_TASK_HANDLE, 0);
 
     printf("Minimum free heap size: %" PRIu32 " bytes\n", esp_get_minimum_free_heap_size());
 
     while (1)
     {
-        vTaskDelay(1000);
-        // vTaskSuspend(NULL);
+        vTaskSuspend(NULL);
     }
 }

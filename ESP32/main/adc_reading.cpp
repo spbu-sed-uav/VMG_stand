@@ -1,9 +1,18 @@
 #include "adc_reading.h"
 
+#include <array>
+#include <cstddef>
+
+#include "packet.h"
 adc_oneshot_unit_handle_t adc_handler = NULL;
 
 ADC_Driver analogue_reader;
 
+void
+ADC_Driver::adc_set(uint8_t bit, uint32_t value)
+{
+  packet_to_send.adc_set(value, bit);
+};
 void
 ADC_Driver::change_bitmask(uint8_t bit_to_swap)
 {
@@ -26,7 +35,7 @@ bool
 ADC_Driver::check_bitmask(uint8_t index)
 {
   bool const bitmask_check =
-      static_cast<uint8_t>((bit_mask >> index) & std::byte(1));
+      static_cast<uint8_t>((bit_mask >> index) & std::byte(1)) != 0U;
   return bitmask_check;
 }
 
@@ -47,15 +56,22 @@ ADC_Driver::get_channel(uint8_t index)
 
   return answer;
 }
-
+void
+ADC_Driver::read_adc(uint8_t sensor_bit, int& reading)
+{
+  std::array<int, READ_ADC_SIZE> raw_data;
+  ESP_ERROR_CHECK(adc_oneshot_read(
+      adc_handler, analogue_reader.get_channel(sensor_bit), &raw_data[0]));
+  reading = raw_data[0];
+}
 void
 ADC_Driver::read_adc(uint8_t sensor_bit)
 {
-  int readings[10];
+  std::array<int, READ_ADC_SIZE> readings;
 
   ESP_ERROR_CHECK(adc_oneshot_read(
       adc_handler, analogue_reader.get_channel(sensor_bit), &readings[0]));
-
+    
   packet_to_send.adc_set(readings[0], sensor_bit);
 }
 
@@ -77,7 +93,7 @@ ADC_Driver::oneshot_adc_init()  // maybe remove parameters, bcz they're global
   };
 
   for (uint8_t i = 0; i < 8; i++) {
-    if (static_cast<uint8_t>((bit_mask >> i) & std::byte(1))) {
+    if (static_cast<uint8_t>((bit_mask >> i) & std::byte(1)) != 0u) {
       ESP_ERROR_CHECK(
           adc_oneshot_config_channel(handle, adc_channels[i], &chan_config));
     }
@@ -95,7 +111,7 @@ adc_reading_task(void* arg)
 {
   for (;;) {
     ulTaskNotifyTake(0, pdMS_TO_TICKS(ONE_SECOND_MS));
-    analogue_reader.read_adc(*static_cast<uint8_t*>(arg));
+    ADC_Driver::read_adc(*static_cast<uint8_t*>(arg));
     vTaskDelay(10);
   }
 }

@@ -9,7 +9,7 @@ event_handler(void* arg, esp_event_base_t event_base, int32_t event_id,
   }
   else if (event_base == WIFI_EVENT &&
            event_id == WIFI_EVENT_STA_DISCONNECTED) {
-    if (s_retry_num < 8) {
+    if (s_retry_num < EXAMPLE_ESP_MAXIMUM_RETRY) {
       esp_wifi_connect();
       s_retry_num++;
       ESP_LOGI(WIFI_TAG, "retry to connect to the AP");
@@ -20,7 +20,7 @@ event_handler(void* arg, esp_event_base_t event_base, int32_t event_id,
     ESP_LOGI(WIFI_TAG, "connect to the AP fail");
   }
   else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
-    ip_event_got_ip_t const* event = (ip_event_got_ip_t*)event_data;
+    ip_event_got_ip_t* event = (ip_event_got_ip_t*)event_data;
     ESP_LOGI(WIFI_TAG, "got ip:" IPSTR, IP2STR(&event->ip_info.ip));
     s_retry_num = 0;
     xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
@@ -28,7 +28,7 @@ event_handler(void* arg, esp_event_base_t event_base, int32_t event_id,
 }
 
 void
-wifi_init_sta()
+wifi_init_sta(void)
 {
   s_wifi_event_group = xEventGroupCreate();
 
@@ -50,8 +50,8 @@ wifi_init_sta()
   wifi_config_t wifi_config = {
       .sta =
           {
-                .ssid     = "RmC32",
-                .password = "yhydg6tceggn",
+                .ssid     = "RealmeC31",
+                .password = "slakf",
                 /* Authmode threshold resets to WPA2 as default if password
                 * matches WPA2 standards (password len => 8). If you want to
                 * connect the device to deprecated WEP/WPA networks, Please set
@@ -59,11 +59,12 @@ wifi_init_sta()
                 * the password with length and format matching to
                 * WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK standards.
                 */
-              .threshold =
-                  {
-                      .authmode = WIFI_AUTH_WPA3_PSK,
-                  }, .sae_pwe_h2e        = WPA3_SAE_PWE_UNSPECIFIED,
-                .sae_h2e_identifier = "",
+              .threshold{
+                
+                .authmode = WIFI_AUTH_WPA2_PSK,
+              }, 
+              .sae_pwe_h2e        = WPA3_SAE_PWE_BOTH,
+              .sae_h2e_identifier = "",
                 },
   };
   ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
@@ -82,10 +83,12 @@ wifi_init_sta()
   /* xEventGroupWaitBits() returns the bits before the call returned, hence we
    * can test which event actually happened. */
   if (bits & WIFI_CONNECTED_BIT) {
-    ESP_LOGI(WIFI_TAG, "connected to ap SSID");
+    ESP_LOGI(WIFI_TAG, "connected to ap SSID:%s password:%s",
+             EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
   }
   else if (bits & WIFI_FAIL_BIT) {
-    ESP_LOGI(WIFI_TAG, "Failed to connect to SSID");
+    ESP_LOGI(WIFI_TAG, "Failed to connect to SSID:%s, password:%s",
+             EXAMPLE_ESP_WIFI_SSID, EXAMPLE_ESP_WIFI_PASS);
   }
   else {
     ESP_LOGE(WIFI_TAG, "UNEXPECTED EVENT");

@@ -30,7 +30,7 @@ create_transmission(transmission_types type)
 }
 
 void
-task_transmission(void* arg)
+transmission_task(void* arg)
 {
   auto* transmission = static_cast<TCP*>(arg);
   transmission->establish_connection();

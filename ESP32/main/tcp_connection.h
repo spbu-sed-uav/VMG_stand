@@ -17,10 +17,12 @@ extern "C" {
 }
 #include "packet.h"
 #include "transmission.h"
-
+#include <cstddef>
 #define INVALID_SOCK (-1)
 
 #define YIELD_TO_ALL_MS 50
+
+static constexpr uint8_t RX_BUFFER_SIZE{128};
 
 constexpr char* TCP_CLIENT_CONNECT_ADDRESS{"127.0.0.1"};
 constexpr char* TCP_CLIENT_CONNECT_PORT{"5800"};

@@ -21,7 +21,7 @@ extern "C" {
 //================================================
 // MINE HEADERS
 //================================================
-
+#include "temperature_sensor.h"
 #include "HX711_reading.h"
 #include "adc_reading.h"
 #include "rpm_counter.h"
@@ -108,7 +108,7 @@ app_main()
 
   xTaskCreatePinnedToCore(transmission_task, "Sending task", 2048, NULL, 40,
                           &SEND_TASK_HANDLE, 0);
-
+/*
   xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048, (void*)0, 10,
                           &VOLTAGE_TASK_HANDLE,
                           1);  // check priorities, last null - handler
@@ -118,16 +118,16 @@ app_main()
   xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance", 2048, (void*)2,
                           10, &DISTURBNCE_TASK_HANDLE,
                           1);  // check priorities, last null - handler
-  xTaskCreatePinnedToCore(adc_reading_task, "Temperature1", 2048, (void*)3, 10,
+  xTaskCreatePinnedToCore(temperature_task, "Temperature1", 2048, (void*)3, 10,
                           &TEMPERATURE1_TASK_HANDLE,
                           0);  // check priorities, last null - handler
-  xTaskCreatePinnedToCore(adc_reading_task, "Temperature2", 2048, (void*)4, 10,
+  xTaskCreatePinnedToCore(temperature_task, "Temperature2", 2048, (void*)4, 10,
                           &TEMPERATURE2_TASK_HANDLE,
                           0);  // check priorities, last null - handler
 
   xTaskCreatePinnedToCore(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 10,
                           &RPM_TASK_HANDLE, 0);
-
+*/
   printf("Minimum free heap size: %" PRIu32 " bytes\n",
          esp_get_minimum_free_heap_size());
 

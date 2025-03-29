@@ -46,7 +46,7 @@ class ADC_Driver {
   ADC_Driver() = default;
 
   void adc_begin(std::byte bitmask);
-
+  void adc_set(uint8_t bit, uint32_t value);
   bool check_bitmask(uint8_t index);
 
   void change_bitmask(uint8_t bit_to_swap);
@@ -55,10 +55,10 @@ class ADC_Driver {
   void change_channel(uint8_t sensor_bit, adc_channel_t swap_channel);
 
   void oneshot_adc_init();
-
-  void read_adc(uint8_t sensor_bit);
+  void read_adc(uint8_t sensor_bit, int& reading);
+  static void read_adc(uint8_t sensor_bit);
 };
-
+static uint8_t constexpr READ_ADC_SIZE{1};
 extern adc_oneshot_unit_handle_t adc_handler;
 
 static char const* ADC_TAG = "ADC_READINGS";

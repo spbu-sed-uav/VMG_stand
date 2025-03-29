@@ -187,7 +187,7 @@ void
 TCP::send_data(char const* payload)
 {
   // byte a; doesn't work, maybe just use char or 8bit smth idk
-  static char rx_buffer[128];
+  static char rx_buffer[RX_BUFFER_SIZE];
 
   int len_msg = 0;
 
@@ -199,15 +199,16 @@ TCP::send_data(char const* payload)
   }
   ESP_LOGI(TRANSMISSION_TAG, "struct was sent");
 
+  len_msg = 0;
   // Keep receiving until we have a reply
-  do {
+  while(len_msg==0) {
     len_msg = try_receive(TRANSMISSION_TAG, sock, rx_buffer, sizeof(rx_buffer));
     if (len_msg < 0) {
       ESP_LOGE(TRANSMISSION_TAG, "Error occurred during try_receive");
       socket_error_handling(sock, *address_info);
     }
     vTaskDelay(pdMS_TO_TICKS(YIELD_TO_ALL_MS));
-  } while (len_msg == 0);
+  }
 
   ESP_LOGI(TRANSMISSION_TAG, "Received: %.*s", len_msg, rx_buffer);
 }

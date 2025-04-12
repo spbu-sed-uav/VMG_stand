@@ -24,8 +24,8 @@ extern "C" {
 
 static constexpr uint8_t RX_BUFFER_SIZE{128};
 
-constexpr char* TCP_CLIENT_CONNECT_ADDRESS{"127.0.0.1"};
-constexpr char* TCP_CLIENT_CONNECT_PORT{"5800"};
+constexpr char* TCP_CLIENT_CONNECT_ADDRESS{"192.168.86.218"};
+constexpr char* TCP_CLIENT_CONNECT_PORT{"6000"};
 //=================================================================
 // TASK HANDLERS(For notifies)
 //=================================================================
@@ -63,7 +63,7 @@ class TCP : public Transmission_protocols {
 
  public:
   void send_data(char const* payload) final;
-  char const* get_data() final;
+  std::array<char,40> get_data() final;
   void establish_connection() final;
 };
 

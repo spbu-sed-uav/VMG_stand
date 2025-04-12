@@ -1,5 +1,4 @@
 #include "tcp_connection.h"
-
 TaskHandle_t VOLTAGE_TASK_HANDLE      = NULL;
 TaskHandle_t CURRENT_TASK_HANDLE      = NULL;
 TaskHandle_t DISTURBNCE_TASK_HANDLE   = NULL;
@@ -45,6 +44,7 @@ int
 socket_send(char const* tag, int const sock, char const* data, size_t const len)
 {
   int to_write = len;
+  ESP_LOGI("SENDING", "%d - len", len);
   while (to_write > 0) {
     int const written = send(sock, data + (len - to_write), to_write, 0);
     if (written < 0 && errno != EINPROGRESS && errno != EAGAIN &&
@@ -82,11 +82,11 @@ socket_error_handling(int sock, addrinfo const& addr_info)
   vTaskDelete(SEND_TASK_HANDLE);
 }
 
-void
+void 
 TCP::establish_connection()
 {
-  const addrinfo hints = {.ai_socktype = SOCK_STREAM};
-  sock                        = INVALID_SOCK;
+  addrinfo const hints = {.ai_socktype = SOCK_STREAM};
+  sock                 = INVALID_SOCK;
 
   int res = getaddrinfo(TCP_CLIENT_CONNECT_ADDRESS, TCP_CLIENT_CONNECT_PORT,
                         &hints, &address_info);
@@ -114,7 +114,7 @@ TCP::establish_connection()
     log_socket_error(TRANSMISSION_TAG, sock, errno,
                      "Unable to set socket non blocking");
   }
-
+  ESP_LOGI(TRANSMISSION_TAG, "SOCKET MARKED AS NON-BLOCKING");
   if (connect(sock, address_info->ai_addr, address_info->ai_addrlen) != 0) {
     if (errno == EINPROGRESS) {
       ESP_LOGD(TRANSMISSION_TAG, "connection in progress");
@@ -162,7 +162,7 @@ TCP::establish_connection()
   }
 }
 
-char const*
+std::array<char,40>
 TCP::get_data()
 {
   PACKET_DATA initial_payload            = packet_to_send;
@@ -173,14 +173,9 @@ TCP::get_data()
          sizeof(PACKET_DATA) - 1);  // can we fucked up with padding?
   std::span<std::byte> span_bytes(aux);
   initial_payload.crc_set(crc8(span_bytes));
-
-  static std::array<char, sizeof(PACKET_DATA)>
-      payload_array;  // there can be conversion errors (overflow I guess)
-
-  memcpy(&payload_array, &initial_payload,
-         sizeof(initial_payload));  // check later
-
-  return &payload_array[0];
+  std::array<char, 40> array_to_send;
+  memcpy(&array_to_send,&initial_payload, sizeof(PACKET_DATA));
+  return(array_to_send);
 }
 
 void
@@ -192,16 +187,16 @@ TCP::send_data(char const* payload)
   int len_msg = 0;
 
   ESP_LOGI(TRANSMISSION_TAG, "Client sends data to the server...");
-  len_msg = socket_send(TRANSMISSION_TAG, sock, payload, strlen(payload));
+  len_msg = socket_send(TRANSMISSION_TAG, sock, payload, sizeof(PACKET_DATA));
   if (len_msg < 0) {
     ESP_LOGE(TRANSMISSION_TAG, "Error occurred during socket_send");
     socket_error_handling(sock, *address_info);
   }
   ESP_LOGI(TRANSMISSION_TAG, "struct was sent");
-
+  ESP_LOGI(TRANSMISSION_TAG, "%d - len", len_msg);
   len_msg = 0;
   // Keep receiving until we have a reply
-  while(len_msg==0) {
+  while (len_msg == 0) {
     len_msg = try_receive(TRANSMISSION_TAG, sock, rx_buffer, sizeof(rx_buffer));
     if (len_msg < 0) {
       ESP_LOGE(TRANSMISSION_TAG, "Error occurred during try_receive");

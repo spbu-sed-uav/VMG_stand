@@ -50,22 +50,16 @@ wifi_init_sta(void)
   wifi_config_t wifi_config = {
       .sta =
           {
-                .ssid     = "RealmeC31",
-                .password = "slakf",
-                /* Authmode threshold resets to WPA2 as default if password
-                * matches WPA2 standards (password len => 8). If you want to
-                * connect the device to deprecated WEP/WPA networks, Please set
-                * the threshold value to WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK and set
-                * the password with length and format matching to
-                * WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK standards.
-                */
-              .threshold{
-                
-                .authmode = WIFI_AUTH_WPA2_PSK,
-              }, 
-              .sae_pwe_h2e        = WPA3_SAE_PWE_BOTH,
-              .sae_h2e_identifier = "",
+                .ssid        = "RmC32",
+                .password    = "yhydg6tceggnzc5",
                 },
+      /* Authmode threshold resets to WPA2 as default if password
+       * matches WPA2 standards (password len => 8). If you want to
+       * connect the device to deprecated WEP/WPA networks, Please set
+       * the threshold value to WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK and set
+       * the password with length and format matching to
+       * WIFI_AUTH_WEP/WIFI_AUTH_WPA_PSK standards.
+       */
   };
   ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
   ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));

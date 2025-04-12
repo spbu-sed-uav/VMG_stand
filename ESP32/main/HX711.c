@@ -148,7 +148,7 @@ HX711_tare()
 {
   ESP_LOGI(DEBUGTAG, "===================== START TARE ====================");
   unsigned long sum = 0;
-  sum               = HX711_read_average(20);
+  sum               = HX711_read_average(50);
   HX711_set_offset(sum);
   ESP_LOGI(DEBUGTAG,
            "===================== END TARE: %ld ====================", sum);

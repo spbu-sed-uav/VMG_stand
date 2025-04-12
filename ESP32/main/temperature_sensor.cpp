@@ -26,9 +26,9 @@ thermistor::NTC_compute(float analog, uint32_t R, uint16_t B, uint8_t t,
 }
 
 // пин, R резистора, B термистора, t термистора, R термистора, разрешение АЦП
-void thermistor::setup_thermistor(uint8_t pin, uint32_t R, uint16_t B,
-                             uint8_t t, uint32_t Rt,
-                             uint8_t res, uint8_t thermistor_bit)
+void
+thermistor::setup_thermistor(uint8_t pin, uint32_t R, uint16_t B, uint8_t t,
+                             uint32_t Rt, uint8_t res, uint8_t thermistor_bit)
 {
   config(R, B, t, Rt);
   setPin(pin, res);
@@ -83,16 +83,21 @@ thermistor::computeTemp(float analog, uint8_t res)
   return NTC_compute(analog, _baseDivRes, _beta, _tempBase, res);
 }
 
-void temperature_task(void* arg){
-    thermistor* sensor = &motor;
-    uint8_t sensor_bit = *static_cast<uint8_t*>(arg);
-    if(sensor_bit==regulator.getBit()){
-        sensor = &regulator;
-    }
-    for(;;){
-        uint32_t avg_temperature = static_cast<uint32_t>(roundf(sensor->getTempAverage(10)));
-        ulTaskNotifyTake(0, pdMS_TO_TICKS(ONE_SECOND_MS));
-        analogue_reader.adc_set(sensor_bit, avg_temperature);
-        vTaskDelay(40);
-    }
+void
+temperature_task(void* arg)
+{
+  regulator.config(1, 1);
+  motor.config(1, 1);
+  thermistor* sensor = &motor;
+  auto sensor_bit    = *static_cast<int*>(arg);
+  if (sensor_bit == regulator.getBit()) {
+    sensor = &regulator;
+  }
+  for (;;) {
+    uint32_t avg_temperature =
+        static_cast<uint32_t>(roundf(sensor->getTempAverage(10)));
+    ulTaskNotifyTake(0, pdMS_TO_TICKS(ONE_SECOND_MS));
+    analogue_reader.adc_set(sensor_bit, avg_temperature);
+    vTaskDelay(40);
+  }
 }

@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <array>
 #include <span>
 #include <utility>
 
@@ -22,7 +23,7 @@ class Transmission_protocols {
 
   virtual void send_data(char const* payload) = 0;
   virtual void establish_connection()         = 0;
-  virtual char const* get_data()              = 0;
+  virtual std::array<char,40> get_data()              = 0;
 };
 
 Transmission_protocols::ptr create_transmission();

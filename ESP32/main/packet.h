@@ -26,11 +26,11 @@ std::byte crc8(std::span<std::byte> buffer);
 
 /// @brief
 class PACKET_DATA {
-  uint32_t _rpm;              // done                    // Rotation per minute
-  uint32_t _ADC_Readings[8];  // done
-  std::byte _crc;             // crc
+  uint32_t _rpm = 0;              // done                    // Rotation per minute
+  uint32_t _ADC_Readings[8] = {1,2,3,4,5,6,7,8};  // done
+  std::byte _crc = std::byte(9);             // crc
  public:
-  PACKET_DATA() = default;
+//  PACKET_DATA() = default;
 
   uint32_t
   rpm()

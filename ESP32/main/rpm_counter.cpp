@@ -10,8 +10,6 @@ void IRAM_ATTR
 gpio_rotation_isr_handler(void* arg)
 {
   rotation_count++;
-
-  ESP_LOGI("COLLISION_SENSOR", "Got rotation");
 }
 
 /// @brief timer callback, every second recalculates rpm based on amount of
@@ -21,9 +19,10 @@ void
 periodic_timer_callback(void* arg)
 {
   uint16_t const count         = rotation_count / AMOUNT_OF_WINGS;
+//  ESP_LOGI("TAG","GOT %d", rotation_count);
   uint64_t const time_to_count = esp_timer_get_time() - time_rpm;
 
-  final_rpm                    = count / time_to_count * ONE_SECOND_MS * 60;
+  final_rpm                    = count * ONE_SECOND_MS * 60 / time_to_count ;
 
   time_rpm                     = esp_timer_get_time();
   rotation_count               = 0;

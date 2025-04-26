@@ -14,8 +14,8 @@ extern "C" {
 //ESP_WIFI_SAE_MODE = ESP_WPA3_SAE_PWE_BOTH;
 //ESP_WIFI_PW_ID = "";
 //ESP_WIFI_SCAN_AUTH_MODE_THRESHOLD = ESP_WIFI_AUTH_WPA2_PSK;
-#define EXAMPLE_ESP_WIFI_SSID     "RmC32"
-#define EXAMPLE_ESP_WIFI_PASS     "yhydg6tceggnzc5"
+#define EXAMPLE_ESP_WIFI_SSID     "UAV_SPBU"
+#define EXAMPLE_ESP_WIFI_PASS     "Digma123"
 #define EXAMPLE_ESP_MAXIMUM_RETRY 5
 
 static EventGroupHandle_t s_wifi_event_group;

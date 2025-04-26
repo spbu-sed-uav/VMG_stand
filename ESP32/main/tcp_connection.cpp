@@ -11,6 +11,8 @@ TaskHandle_t WEIGHT_TASK_HANDLE       = NULL;
 TaskHandle_t RPM_TASK_HANDLE          = NULL;
 TaskHandle_t SEND_TASK_HANDLE         = NULL;
 
+TaskHandle_t UART_TASK_HANDLE         = NULL;
+
 void
 log_socket_error(char const* tag, int const sock, int const err,
                  char const* message)
@@ -44,7 +46,6 @@ int
 socket_send(char const* tag, int const sock, char const* data, size_t const len)
 {
   int to_write = len;
-  ESP_LOGI("SENDING", "%d - len", len);
   while (to_write > 0) {
     int const written = send(sock, data + (len - to_write), to_write, 0);
     if (written < 0 && errno != EINPROGRESS && errno != EAGAIN &&
@@ -60,16 +61,36 @@ socket_send(char const* tag, int const sock, char const* data, size_t const len)
 void
 notify_all_with_value(uint32_t value)
 {
-  xTaskNotify(VOLTAGE_TASK_HANDLE, value, eSetValueWithOverwrite);
-  xTaskNotify(CURRENT_TASK_HANDLE, value, eSetValueWithOverwrite);
-  xTaskNotify(DISTURBNCE_TASK_HANDLE, value, eSetValueWithOverwrite);
+  if (VOLTAGE_TASK_HANDLE != NULL) {
+    xTaskNotify(VOLTAGE_TASK_HANDLE, value, eSetValueWithOverwrite);
+  }
 
-  xTaskNotify(TEMPERATURE1_TASK_HANDLE, value, eSetValueWithOverwrite);
-  xTaskNotify(TEMPERATURE2_TASK_HANDLE, value, eSetValueWithOverwrite);
-  xTaskNotify(TEMPERATURE3_TASK_HANDLE, value, eSetValueWithOverwrite);
+  if (CURRENT_TASK_HANDLE != NULL) {
+    xTaskNotify(CURRENT_TASK_HANDLE, value, eSetValueWithOverwrite);
+  }
 
-  xTaskNotify(WEIGHT_TASK_HANDLE, value, eSetValueWithOverwrite);
-  xTaskNotify(RPM_TASK_HANDLE, value, eSetValueWithOverwrite);
+  if (DISTURBNCE_TASK_HANDLE != NULL) {
+    xTaskNotify(DISTURBNCE_TASK_HANDLE, value, eSetValueWithOverwrite);
+  }
+
+  if (TEMPERATURE1_TASK_HANDLE != NULL) {
+    xTaskNotify(TEMPERATURE1_TASK_HANDLE, value, eSetValueWithOverwrite);
+  }
+
+  if (TEMPERATURE2_TASK_HANDLE != NULL) {
+    xTaskNotify(TEMPERATURE2_TASK_HANDLE, value, eSetValueWithOverwrite);
+  }
+
+  if (WEIGHT_TASK_HANDLE != NULL) {
+    xTaskNotify(WEIGHT_TASK_HANDLE, value, eSetValueWithOverwrite);
+  }
+
+  if (RPM_TASK_HANDLE != NULL) {
+    xTaskNotify(RPM_TASK_HANDLE, value, eSetValueWithOverwrite);
+  }
+  if (UART_TASK_HANDLE != NULL) {
+    xTaskNotify(UART_TASK_HANDLE, value, eSetValueWithOverwrite);
+  }
 }
 
 void
@@ -82,7 +103,7 @@ socket_error_handling(int sock, addrinfo const& addr_info)
   vTaskDelete(SEND_TASK_HANDLE);
 }
 
-void 
+void
 TCP::establish_connection()
 {
   addrinfo const hints = {.ai_socktype = SOCK_STREAM};
@@ -162,7 +183,7 @@ TCP::establish_connection()
   }
 }
 
-std::array<char,40>
+std::array<char, PACKET_SIZE>
 TCP::get_data()
 {
   PACKET_DATA initial_payload            = packet_to_send;
@@ -173,9 +194,9 @@ TCP::get_data()
          sizeof(PACKET_DATA) - 1);  // can we fucked up with padding?
   std::span<std::byte> span_bytes(aux);
   initial_payload.crc_set(crc8(span_bytes));
-  std::array<char, 40> array_to_send;
-  memcpy(&array_to_send,&initial_payload, sizeof(PACKET_DATA));
-  return(array_to_send);
+  std::array<char, PACKET_SIZE> array_to_send;
+  memcpy(&array_to_send, &initial_payload, sizeof(PACKET_DATA));
+  return (array_to_send);
 }
 
 void

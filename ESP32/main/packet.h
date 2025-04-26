@@ -5,8 +5,6 @@
 #include <span>
 #include <utility>
 
-#include "adc_reading.h"
-
 // class Bluetooth : public Transmission_protocols
 // {
 //     void send_data() final;
@@ -26,11 +24,11 @@ std::byte crc8(std::span<std::byte> buffer);
 
 /// @brief
 class PACKET_DATA {
-  uint32_t _rpm = 0;              // done                    // Rotation per minute
-  uint32_t _ADC_Readings[8] = {1,2,3,4,5,6,7,8};  // done
-  std::byte _crc = std::byte(9);             // crc
+  uint32_t _rpm;              // done                    // Rotation per minute
+  uint32_t _ADC_Readings[8];  // done
+  std::byte _crc;             // crc
  public:
-//  PACKET_DATA() = default;
+  PACKET_DATA() = default;
 
   uint32_t
   rpm()
@@ -67,3 +65,5 @@ class PACKET_DATA {
 };
 
 extern struct PACKET_DATA packet_to_send;
+
+constexpr size_t PACKET_SIZE {sizeof(PACKET_DATA)};

@@ -50,8 +50,8 @@ wifi_init_sta(void)
   wifi_config_t wifi_config = {
       .sta =
           {
-                .ssid        = "RmC32",
-                .password    = "yhydg6tceggnzc5",
+                .ssid        = EXAMPLE_ESP_WIFI_SSID,
+                .password    = EXAMPLE_ESP_WIFI_PASS,
                 },
       /* Authmode threshold resets to WPA2 as default if password
        * matches WPA2 standards (password len => 8). If you want to

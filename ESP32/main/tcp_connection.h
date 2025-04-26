@@ -15,6 +15,7 @@ extern "C" {
 #include "sys/socket.h"
 #include "xtensa/hal.h"
 }
+#include "uart.h"
 #include "packet.h"
 #include "transmission.h"
 #include <cstddef>
@@ -24,8 +25,8 @@ extern "C" {
 
 static constexpr uint8_t RX_BUFFER_SIZE{128};
 
-constexpr char* TCP_CLIENT_CONNECT_ADDRESS{"192.168.86.218"};
-constexpr char* TCP_CLIENT_CONNECT_PORT{"6000"};
+constexpr char* TCP_CLIENT_CONNECT_ADDRESS{"192.168.0.105"};
+constexpr char* TCP_CLIENT_CONNECT_PORT{"2001"};
 //=================================================================
 // TASK HANDLERS(For notifies)
 //=================================================================
@@ -42,6 +43,7 @@ extern TaskHandle_t WEIGHT_TASK_HANDLE;
 extern TaskHandle_t RPM_TASK_HANDLE;
 extern TaskHandle_t SEND_TASK_HANDLE;
 
+extern TaskHandle_t UART_TASK_HANDLE;
 //==================================================================
 //
 //==================================================================
@@ -63,7 +65,7 @@ class TCP : public Transmission_protocols {
 
  public:
   void send_data(char const* payload) final;
-  std::array<char,40> get_data() final;
+  std::array<char,PACKET_SIZE> get_data() final;
   void establish_connection() final;
 };
 

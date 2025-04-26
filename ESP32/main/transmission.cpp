@@ -36,15 +36,15 @@ transmission_task(void* arg)
   transmission->establish_connection();
   ESP_LOGI("TRANSMISSION", "GOT PAST INITALISATION");
   for (;;) {
-//    notify_all_with_value(0);
+    notify_all_with_value(0);
+    ESP_LOGI("TRANSMISSION", "GOT THERE");
+    std::array<char, sizeof(PACKET_DATA)> payload_array =
+        transmission->get_data();
 
-    std::array<char,sizeof(PACKET_DATA)> payload_array = transmission->get_data();
-//    notify_all_with_value(32000);
-for(auto& i: payload_array){
-  ESP_LOGI("TEST", "%i", int(i));
-}    
-const char* payload = payload_array.data();
-    
+    notify_all_with_value(32000);
+
+    char const* payload = payload_array.data();
+
     transmission->send_data(payload);
 
     vTaskDelay(200);

@@ -17,7 +17,7 @@ extern "C" {
 #include "sdkconfig.h"
 #include "xtensa/hal.h"
 }
-void logging_task(void* arg);
+
 //================================================
 // MINE HEADERS
 //================================================
@@ -26,9 +26,10 @@ void logging_task(void* arg);
 #include "rpm_counter.h"
 #include "tcp_connection.h"
 #include "temperature_sensor.h"
+#include "testing.h"
 #include "transmission.h"
+#include "uart.h"
 #include "wifi_connection.h"
-
 /**
  * Brief:
  * This code is running on VMG-Stand.
@@ -52,21 +53,12 @@ void logging_task(void* arg);
 //=================================================================
 // LOGING TAGS
 //=================================================================
-
 static char const* MAIN_TAG = "MAIN";
 
-extern "C" 
-void app_main()
+extern "C" void
+app_main()
 {
-  packet_to_send.rpm_set(0x61+0x00610000+0x00006100+0x61000000);
-  packet_to_send.adc_set(0x61+0x00610000+0x00006100+0x61000000,0);
-  packet_to_send.adc_set(0x61+0x00610000+0x00006100+0x61000000,1);
-  packet_to_send.adc_set(0x61+0x00610000+0x00006100+0x61000000,2);
-  packet_to_send.adc_set(0x61+0x00610000+0x00006100+0x61000000,3);
-  packet_to_send.adc_set(0x61+0x00610000+0x00006100+0x61000000,4);
-  packet_to_send.adc_set(0x61+0x00610000+0x00006100+0x61000000,5);
-  packet_to_send.adc_set(0x61+0x00610000+0x00006100+0x61000000,6);
-  packet_to_send.adc_set(0x61+0x00610000+0x00006100+0x61000000,7);
+  TestingMethods::init_test_packet();
   //=========================================================
   // WIFI CONNECTION
   esp_err_t ret = nvs_flash_init();
@@ -78,7 +70,9 @@ void app_main()
   ESP_ERROR_CHECK(ret);
 
   ESP_LOGI("WIFI", "ESP_WIFI_MODE_STA");
-    wifi_init_sta();
+
+  wifi_init_sta();
+  setup_pin_for_weights();
   //=========================================================
 
   esp_timer_create_args_t const periodic_timer_args = {
@@ -101,10 +95,18 @@ void app_main()
       GPIO_INTR_POSEDGE,     /*!< GPIO interrupt type     */
   };
   TCP transmission;
-
+  analogue_reader.change_bitmask(0);
+  analogue_reader.change_bitmask(1);
+  analogue_reader.change_bitmask(2);
+  analogue_reader.change_bitmask(3);
+  analogue_reader.change_bitmask(4);
+  analogue_reader.change_bitmask(5);
+  analogue_reader.change_bitmask(6);
+  analogue_reader.change_bitmask(7);
+  analogue_reader.change_bitmask(8);
   gpio_config(&io_conf);
-  int sensor_num = 3;
-  int sensor_num_t = 4;
+  std::array<int, ADC_MAX_AMOUNT> adc_sensors = {0, 1, 2, 3, 4, 5, 6, 7};
+
   // install gpio isr service
   gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
 
@@ -112,59 +114,50 @@ void app_main()
   ESP_ERROR_CHECK(
       gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_rotation_isr_handler, NULL));
 
-   analogue_reader.oneshot_adc_init();
+  analogue_reader.oneshot_adc_init();
 
   xTaskCreatePinnedToCore(weight_reading_task, "Weight_reading", 4096, NULL, 15,
                           &WEIGHT_TASK_HANDLE, tskNO_AFFINITY);
 
-//  xTaskCreatePinnedToCore(transmission_task, "Sending task", 2048,
-//    &transmission, 15,
-//                            &SEND_TASK_HANDLE, tskNO_AFFINITY);
-  xTaskCreatePinnedToCore(logging_task, "LOGGING_TASK", 2048, NULL, 10, NULL,
-                          tskNO_AFFINITY);
-  
-  xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048, (void*)(0), 10,
-                          &VOLTAGE_TASK_HANDLE,
+  xTaskCreatePinnedToCore(transmission_task, "Sending task", 4096,
+                          &transmission, 20, &SEND_TASK_HANDLE, 0);
+
+  /*xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048,
+                          &adc_sensors[0], 10, &VOLTAGE_TASK_HANDLE,
                           1);  // check priorities, last null - handler
-  xTaskCreatePinnedToCore(adc_reading_task, "ADC_Current", 2048, (void*)(1), 10,
-                          &CURRENT_TASK_HANDLE,
-                          1);  // check priorities, last null - handler
-  xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance", 2048, (void*)(2),
-                          10, &DISTURBNCE_TASK_HANDLE,
-                          1);  // check priorities, last null - handler
-  xTaskCreatePinnedToCore(temperature_task, "Temperature1", 2048, (void*)(sensor_num), 10, //need to use smth with actual address
+  */
+  /*xTaskCreatePinnedToCore(adc_reading_task, "ADC_Current", 2048,
+                        &adc_sensors[1], 10, &CURRENT_TASK_HANDLE, 1);
+*/xTaskCreatePinnedToCore(uart_task, "reading_adc_from_uart", 4096, NULL, 10,
+                           &UART_TASK_HANDLE, tskNO_AFFINITY); 
+  // check priorities, last null - handler
+  /* xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance",
+     2048,&adc_sensors[2], 10, &DISTURBNCE_TASK_HANDLE, 1);  // check
+     priorities, last null - handler
+  *//*  xTaskCreatePinnedToCore(temperature_task, "Temperature1", 2048, &adc_sensors[3],
+                          10,  // need to use smth with actual address,
+                               // can not cast to void*, im freak
                           &TEMPERATURE1_TASK_HANDLE,
                           0);  // check priorities, last null - handler
-  xTaskCreatePinnedToCore(temperature_task, "Temperature2", 2048, (void*)(sensor_num_t), 10,
-                          &TEMPERATURE2_TASK_HANDLE,
-                          0);  // check priorities, last null - handler
-
-  xTaskCreatePinnedToCore(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 10,
+*/
+  /*
+xTaskCreatePinnedToCore(temperature_task, "Temperature2", 2048, &adc_sensors[4],
+  10, &TEMPERATURE2_TASK_HANDLE,
+  0);  // check priorities, last null - handler
+*/
+  xTaskCreatePinnedToCore(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 11,
                           &RPM_TASK_HANDLE, 0);
 
-//  xTaskNotify(RPM_TASK_HANDLE, 10000, eSetValueWithOverwrite);
-//  xTaskNotify(WEIGHT_TASK_HANDLE, 10000, eSetValueWithOverwrite);
+                          notify_all_with_value(10000);
+
+  xTaskCreatePinnedToCore(show_packet_task, "Show_packet", 2048, NULL, 20, NULL,
+                          tskNO_AFFINITY);
+
 
   printf("Minimum free heap size: %" PRIu32 " bytes\n",
          esp_get_minimum_free_heap_size());
 
   while (true) {
     vTaskSuspend(NULL);
-  }
-}
-void
-logging_task(void* arg)
-{
-  for (;;) {
-    ESP_LOGI("LOGGING CHECK",
-             "PACKET_TO_SEND_DATA: \n%d - rpm, \n%d - weight \n%d - "
-             "adc_voltage,\n%d - "
-             "adc_current,\n%d - adc_disturbance,\n%d - adc_temp_1,\n%d - "
-             "adc_temp_2",
-             int(packet_to_send.rpm()), int(packet_to_send.adc(0)),
-             int(packet_to_send.adc(1)), int(packet_to_send.adc(2)),
-             int(packet_to_send.adc(3)), int(packet_to_send.adc(4)),
-             int(packet_to_send.adc(5)));
-    vTaskDelay(1000);
   }
 }

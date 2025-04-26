@@ -9,7 +9,7 @@ uint64_t final_rpm      = 0;
 void IRAM_ATTR
 gpio_rotation_isr_handler(void* arg)
 {
-  rotation_count++;
+  ++rotation_count;
 }
 
 /// @brief timer callback, every second recalculates rpm based on amount of
@@ -19,7 +19,8 @@ void
 periodic_timer_callback(void* arg)
 {
   uint16_t const count         = rotation_count / AMOUNT_OF_WINGS;
-//  ESP_LOGI("TAG","GOT %d", rotation_count);
+  ESP_LOGI("TAG","GOT %d", rotation_count);
+
   uint64_t const time_to_count = esp_timer_get_time() - time_rpm;
 
   final_rpm                    = count * ONE_SECOND_MS * 60 / time_to_count ;
@@ -35,14 +36,14 @@ rpm_safe_writing_task(void* arg)
 {
   for (;;) {
     if (final_rpm) {
-      ulTaskNotifyTake(0, pdMS_TO_TICKS(ONE_SECOND_MS * 5));
+      ulTaskNotifyTake(0, pdMS_TO_TICKS(ONE_SECOND_MS));
 
       packet_to_send.rpm_set(final_rpm);
 
       final_rpm = 0;
     }
     else {
-      vTaskDelay(100);
+      vTaskDelay(100); //need to manage priority w/ delays, first one idea - table with all tasks, and decide then
     }
   }
 }

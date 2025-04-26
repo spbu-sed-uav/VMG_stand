@@ -7,38 +7,6 @@
 adc_oneshot_unit_handle_t adc_handler = NULL;
 
 ADC_Driver analogue_reader;
-
-void
-ADC_Driver::adc_set(uint8_t bit, uint32_t value)
-{
-  packet_to_send.adc_set(value, bit);
-};
-void
-ADC_Driver::change_bitmask(uint8_t bit_to_swap)
-{
-  bit_mask ^= std::byte(1 << bit_to_swap);  // check, does it works
-}
-
-void
-ADC_Driver::change_bitmask(std::byte swap_bitmask)
-{
-  bit_mask = swap_bitmask;
-}
-
-void
-ADC_Driver::change_channel(uint8_t channel_bit, adc_channel_t swap_channel)
-{
-  adc_channels[channel_bit] = swap_channel;
-}
-
-bool
-ADC_Driver::check_bitmask(uint8_t index)
-{
-  bool const bitmask_check =
-      static_cast<uint8_t>((bit_mask >> index) & std::byte(1)) != 0U;
-  return bitmask_check;
-}
-
 adc_channel_t
 ADC_Driver::get_channel(uint8_t index)
 {
@@ -53,17 +21,21 @@ ADC_Driver::get_channel(uint8_t index)
   if (answer == ADC_CHANNEL_9) {
     ESP_LOGE(ADC_TAG, "trying to get wrong channel");
   }
-
+  ESP_LOGD(ADC_TAG, "Channel is correct, returning %i", int(answer));
   return answer;
 }
 void
 ADC_Driver::read_adc(uint8_t sensor_bit, int& reading)
 {
   std::array<int, READ_ADC_SIZE> raw_data;
+  std::array<int, READ_ADC_SIZE> voltage;
   ESP_ERROR_CHECK(adc_oneshot_read(
       adc_handler, analogue_reader.get_channel(sensor_bit), &raw_data[0]));
   reading = raw_data[0];
+
+  ESP_LOGD(ADC_TAG, "RAW DATA - %i", reading);
 }
+
 void
 ADC_Driver::read_adc(uint8_t sensor_bit)
 {
@@ -71,7 +43,9 @@ ADC_Driver::read_adc(uint8_t sensor_bit)
 
   ESP_ERROR_CHECK(adc_oneshot_read(
       adc_handler, analogue_reader.get_channel(sensor_bit), &readings[0]));
-    
+
+  ESP_LOGD(ADC_TAG, "RAW DATA - %i %i %i", readings[0], readings[1],
+           readings[2]);
   packet_to_send.adc_set(readings[0], sensor_bit);
 }
 
@@ -99,7 +73,7 @@ ADC_Driver::oneshot_adc_init()  // maybe remove parameters, bcz they're global
     }
   }
 
-  ESP_LOGI(ADC_TAG, "ADC INITIALIZATION IS DONE");
+  ESP_LOGD(ADC_TAG, "ADC INITIALIZATION IS DONE");
 
   adc_handler = handle;
 }
@@ -112,6 +86,6 @@ adc_reading_task(void* arg)
   for (;;) {
     ulTaskNotifyTake(0, pdMS_TO_TICKS(ONE_SECOND_MS));
     ADC_Driver::read_adc(*static_cast<uint8_t*>(arg));
-    vTaskDelay(10);
+    vTaskDelay(1000);
   }
 }

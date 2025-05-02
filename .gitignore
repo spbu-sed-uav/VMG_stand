@@ -11,13 +11,13 @@ CTestTestfile.cmake
 _deps
 CMakeUserPresets.json
 build
-ESP32Code/build
-ESP32Code/.vscode
-ESP32Code/.devcontainer
+ESP32/build
+ESP32/.vscode
+ESP32/.devcontainer
 sdkconfig*
 pytest*
 *.yml
 managed_components*
-ESP32Code/README*
+ESP32/README*
 dependencies.lock
 .vscode

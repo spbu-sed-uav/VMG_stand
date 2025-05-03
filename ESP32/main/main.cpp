@@ -105,8 +105,9 @@ app_main()
   analogue_reader.change_bitmask(7);
   analogue_reader.change_bitmask(8);
   gpio_config(&io_conf);
+#if 0
   std::array<int, ADC_MAX_AMOUNT> adc_sensors = {0, 1, 2, 3, 4, 5, 6, 7};
-
+#endif
   // install gpio isr service
   gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
 
@@ -121,30 +122,31 @@ app_main()
 
   xTaskCreatePinnedToCore(transmission_task, "Sending task", 4096,
                           &transmission, 20, &SEND_TASK_HANDLE, 0);
-
-  /*xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048,
+#if 0
+  xTaskCreatePinnedToCore(adc_reading_task, "ADC_Voltage", 2048,
                           &adc_sensors[0], 10, &VOLTAGE_TASK_HANDLE,
                           1);  // check priorities, last null - handler
-  */
-  /*xTaskCreatePinnedToCore(adc_reading_task, "ADC_Current", 2048,
+
+  xTaskCreatePinnedToCore(adc_reading_task, "ADC_Current", 2048,
                         &adc_sensors[1], 10, &CURRENT_TASK_HANDLE, 1);
-*/xTaskCreatePinnedToCore(uart_task, "reading_adc_from_uart", 4096, NULL, 10,
-                           &UART_TASK_HANDLE, tskNO_AFFINITY); 
+#endif
+  xTaskCreatePinnedToCore(uart_task, "reading_adc_from_uart", 4096, NULL, 10,
+                           &UART_TASK_HANDLE, tskNO_AFFINITY);
+#if 0
   // check priorities, last null - handler
-  /* xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance",
+  xTaskCreatePinnedToCore(adc_reading_task, "ADC_Disturbance",
      2048,&adc_sensors[2], 10, &DISTURBNCE_TASK_HANDLE, 1);  // check
      priorities, last null - handler
-  *//*  xTaskCreatePinnedToCore(temperature_task, "Temperature1", 2048, &adc_sensors[3],
+  xTaskCreatePinnedToCore(temperature_task, "Temperature1", 2048, &adc_sensors[3],
                           10,  // need to use smth with actual address,
                                // can not cast to void*, im freak
                           &TEMPERATURE1_TASK_HANDLE,
                           0);  // check priorities, last null - handler
-*/
-  /*
-xTaskCreatePinnedToCore(temperature_task, "Temperature2", 2048, &adc_sensors[4],
+
+  xTaskCreatePinnedToCore(temperature_task, "Temperature2", 2048, &adc_sensors[4],
   10, &TEMPERATURE2_TASK_HANDLE,
   0);  // check priorities, last null - handler
-*/
+#endif
   xTaskCreatePinnedToCore(rpm_safe_writing_task, "Writing_RPM", 2048, NULL, 11,
                           &RPM_TASK_HANDLE, 0);
 

@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+#include <esp_adc/adc_oneshot.h>
 
 #include "packet.h"
 adc_oneshot_unit_handle_t adc_handler = NULL;

@@ -25,8 +25,8 @@ extern "C" {
 
 static constexpr uint8_t RX_BUFFER_SIZE{128};
 
-constexpr char* TCP_CLIENT_CONNECT_ADDRESS{"192.168.0.105"};
-constexpr char* TCP_CLIENT_CONNECT_PORT{"2001"};
+constexpr auto TCP_CLIENT_CONNECT_ADDRESS{"192.168.0.105"};
+constexpr auto TCP_CLIENT_CONNECT_PORT{"2001"};
 //=================================================================
 // TASK HANDLERS(For notifies)
 //=================================================================

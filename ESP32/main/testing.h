@@ -1,3 +1,5 @@
+#pragma once
+
 #include "packet.h"
 #include <string>
 static const char* TAG = "TESTING";

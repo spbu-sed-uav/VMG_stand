@@ -31,7 +31,9 @@ void
 ADC_Driver::read_adc(uint8_t sensor_bit, int& reading)
 {
   std::array<int, READ_ADC_SIZE> raw_data;
+#if 0
   std::array<int, READ_ADC_SIZE> voltage;
+#endif
   ESP_ERROR_CHECK(adc_oneshot_read(
       adc_handler, analogue_reader.get_channel(sensor_bit), &raw_data[0]));
   reading = raw_data[0];

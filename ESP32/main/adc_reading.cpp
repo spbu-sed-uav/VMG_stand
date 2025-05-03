@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+#include <cstdint>
 #include <esp_adc/adc_oneshot.h> // adc_oneshot_unit_handle_t
 #include <hal/adc_types.h> // adc_channel_t
 

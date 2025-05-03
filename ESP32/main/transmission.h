@@ -19,6 +19,7 @@ class Transmission_protocols {
   char const* TRANSMISSION_TAG;
 
  public:
+  virtual ~Transmission_protocols() = default;
   using ptr = std::unique_ptr<Transmission_protocols>;
 
   virtual void send_data(char const* payload) = 0;

@@ -1,6 +1,6 @@
-#include "transmission.h"
+#include "transmission.hpp"
 
-#include "tcp_connection.h"
+#include "tcp_connection.hpp"
 
 Transmission_protocols::ptr
 create_transmission(transmission_types type)

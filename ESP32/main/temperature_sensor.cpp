@@ -1,4 +1,4 @@
-#include "temperature_sensor.h"
+#include "temperature_sensor.hpp"
 // сигнал АЦП, (R резистора / R термистора), B термистора, t термистора,
 // разрешение АЦП
 thermistor motor;

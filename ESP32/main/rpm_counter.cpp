@@ -1,4 +1,4 @@
-#include "rpm_counter.h"
+#include "rpm_counter.hpp"
 
 uint64_t time_rpm       = 0;
 uint16_t rotation_count = 0;

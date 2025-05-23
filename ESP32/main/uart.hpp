@@ -1,13 +1,13 @@
 #pragma once
 #include <stdio.h>
 
-#include "adc_reading.h"
+#include "adc_reading.hpp"
 #include "driver/gpio.h"
 #include "driver/uart.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "packet.h"
+#include "packet.hpp"
 #include "sdkconfig.h"
 
 struct recieving_package {

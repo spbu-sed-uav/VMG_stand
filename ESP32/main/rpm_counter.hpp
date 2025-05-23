@@ -4,7 +4,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/FreeRTOSConfig.h"
 #include "freertos/task.h"
-#include "packet.h"
+#include "packet.hpp"
 
 //=================================================================
 // RPM COUNTING CONSTANTS

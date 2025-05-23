@@ -1,9 +1,9 @@
-#include "adc_reading.h"
+#include "adc_reading.hpp"
 
 #include <array>
 #include <cstddef>
 
-#include "packet.h"
+#include "packet.hpp"
 adc_oneshot_unit_handle_t adc_handler = NULL;
 
 ADC_Driver analogue_reader;

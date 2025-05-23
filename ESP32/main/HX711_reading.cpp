@@ -1,7 +1,7 @@
-#include "HX711_reading.h"
+#include "HX711_reading.hpp"
 
 #include "freertos/FreeRTOS.h"
-#include "packet.h"
+#include "packet.hpp"
 #include <cmath>
 
 #include "driver/gpio.h"

@@ -2,7 +2,7 @@
 #include <cmath>
 #include <cstdlib>
 
-#include "adc_reading.h"
+#include "adc_reading.hpp"
 class thermistor {
   uint8_t _res;       // adc resolution
   uint8_t _pin;       // pin

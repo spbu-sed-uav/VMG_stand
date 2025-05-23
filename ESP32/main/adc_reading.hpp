@@ -6,8 +6,8 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "packet.h"
-#include "rpm_counter.h"
+#include "packet.hpp"
+#include "rpm_counter.hpp"
 //================================================
 // ADC VARIABLES
 //================================================

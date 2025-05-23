@@ -15,9 +15,9 @@ extern "C" {
 #include "sys/socket.h"
 #include "xtensa/hal.h"
 }
-#include "uart.h"
-#include "packet.h"
-#include "transmission.h"
+#include "uart.hpp"
+#include "packet.hpp"
+#include "transmission.hpp"
 #include <cstddef>
 #define INVALID_SOCK (-1)
 

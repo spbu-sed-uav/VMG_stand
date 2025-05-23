@@ -21,15 +21,15 @@ extern "C" {
 //================================================
 // MINE HEADERS
 //================================================
-#include "HX711_reading.h"
-#include "adc_reading.h"
-#include "rpm_counter.h"
-#include "tcp_connection.h"
-#include "temperature_sensor.h"
-#include "testing.h"
-#include "transmission.h"
-#include "uart.h"
-#include "wifi_connection.h"
+#include "HX711_reading.hpp"
+#include "adc_reading.hpp"
+#include "rpm_counter.hpp"
+#include "tcp_connection.hpp"
+#include "temperature_sensor.hpp"
+#include "testing.hpp"
+#include "transmission.hpp"
+#include "uart.hpp"
+#include "wifi_connection.hpp"
 /**
  * Brief:
  * This code is running on VMG-Stand.
@@ -115,9 +115,10 @@ app_main()
       gpio_isr_handler_add(GPIO_INPUT_IO_0, gpio_rotation_isr_handler, NULL));
 
   analogue_reader.oneshot_adc_init();
-
+/*
   xTaskCreatePinnedToCore(weight_reading_task, "Weight_reading", 4096, NULL, 15,
                           &WEIGHT_TASK_HANDLE, tskNO_AFFINITY);
+*/
 
   xTaskCreatePinnedToCore(transmission_task, "Sending task", 4096,
                           &transmission, 20, &SEND_TASK_HANDLE, 0);

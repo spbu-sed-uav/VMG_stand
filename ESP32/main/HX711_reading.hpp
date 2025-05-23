@@ -7,8 +7,8 @@ extern "C" {
 #include "freertos/FreeRTOSConfig.h"
 #include "freertos/task.h"
 }
-#include "rpm_counter.h"
-//=================================================================
+#include "rpm_counter.hpp"
+//===============================================================
 // HX711 CONSTANTS
 //=================================================================
 #define GPIO_SCALES_DATA GPIO_NUM_19
